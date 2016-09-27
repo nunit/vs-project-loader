@@ -71,7 +71,6 @@ var BIN_DIR = PROJECT_DIR + "bin/" + configuration + "/";
 // Files
 var SOLUTION_FILE = PROJECT_DIR + "vs-project-loader.sln";
 var UNIT_TESTS = BIN_DIR + "vs-project-loader.tests.dll";
-//var INTEGRATION_TESTS = BIN_DIR + "v2-tests/v2-test-assembly.dll";
 
 //////////////////////////////////////////////////////////////////////
 // CLEAN
@@ -118,7 +117,6 @@ Task("Test")
 	.Does(() =>
 	{
 		NUnit3(UNIT_TESTS);
-		//NUnit3(INTEGRATION_TESTS);
 	});
 
 //////////////////////////////////////////////////////////////////////
@@ -131,7 +129,7 @@ Task("Package")
 	{
 		CreateDirectory(PACKAGE_DIR);
 
-        NuGetPack("nunit.v2.driver.nuspec", new NuGetPackSettings()
+        NuGetPack("vs-project-loader.nuspec", new NuGetPackSettings()
         {
             Version = packageVersion,
             BasePath = BIN_DIR,
