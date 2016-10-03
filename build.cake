@@ -57,8 +57,6 @@ if (BuildSystem.IsRunningOnAppVeyor)
 	AppVeyor.UpdateBuildVersion(packageVersion);
 }
 
-var packageName = "NUnitV2Driver-" + packageVersion;
-
 //////////////////////////////////////////////////////////////////////
 // DEFINE RUN CONSTANTS
 //////////////////////////////////////////////////////////////////////
@@ -71,6 +69,13 @@ var BIN_DIR = PROJECT_DIR + "bin/" + configuration + "/";
 // Files
 var SOLUTION_FILE = PROJECT_DIR + "vs-project-loader.sln";
 var UNIT_TESTS = BIN_DIR + "vs-project-loader.tests.dll";
+
+// Package sources for nuget restore
+var PACKAGE_SOURCE = new string[]
+	{
+		"https://www.nuget.org/api/v2",
+		"https://www.myget.org/F/nunit/api/v2"
+	};
 
 //////////////////////////////////////////////////////////////////////
 // CLEAN
@@ -90,7 +95,10 @@ Task("Clean")
 Task("NuGetRestore")
     .Does(() =>
 {
-    NuGetRestore(SOLUTION_FILE);
+    NuGetRestore(SOLUTION_FILE, new NuGetRestoreSettings()
+	{
+		Source = PACKAGE_SOURCE
+	});
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -149,6 +157,10 @@ Task("Appveyor")
 	.IsDependentOn("Build")
 	.IsDependentOn("Test")
 	.IsDependentOn("Package");
+
+Task("Travis")
+	.IsDependentOn("Build")
+	.IsDependentOn("Test");
 
 Task("Default")
     .IsDependentOn("Build");

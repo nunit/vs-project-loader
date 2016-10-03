@@ -9,4 +9,3 @@ test: off
 
 artifacts:
 - path: package\*.nupkg
-- path: package\*.zip
