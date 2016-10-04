@@ -1,6 +1,13 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.4.1
 
 //////////////////////////////////////////////////////////////////////
+// PROJECT-SPECIFIC
+//////////////////////////////////////////////////////////////////////
+var SOLUTION_FILE = "vs-project-loader.sln";
+var NUSPEC_FILE = "vs-project-loader.nuspec";
+var UNIT_TEST_ASSEMBLY = "vs-project-loader.tests.dll";
+
+//////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
@@ -12,10 +19,9 @@ var configuration = Argument("configuration", "Debug");
 //////////////////////////////////////////////////////////////////////
 
 var version = "3.5.0";
-var modifier = "";
 
 var dbgSuffix = configuration == "Debug" ? "-dbg" : "";
-var packageVersion = version + modifier + dbgSuffix;
+var packageVersion = version + dbgSuffix;
 
 if (BuildSystem.IsRunningOnAppVeyor)
 {
@@ -66,9 +72,10 @@ var PROJECT_DIR = Context.Environment.WorkingDirectory.FullPath + "/";
 var PACKAGE_DIR = PROJECT_DIR + "package/";
 var BIN_DIR = PROJECT_DIR + "bin/" + configuration + "/";
 
-// Files
-var SOLUTION_FILE = PROJECT_DIR + "vs-project-loader.sln";
-var UNIT_TESTS = BIN_DIR + "vs-project-loader.tests.dll";
+// File PATHS
+var SOLUTION_PATH = PROJECT_DIR + SOLUTION_FILE;
+var NUSPEC_PATH = PROJECT_DIR + NUSPEC_FILE;
+var UNIT_TEST_PATH = BIN_DIR + UNIT_TEST_ASSEMBLY;
 
 // Package sources for nuget restore
 var PACKAGE_SOURCE = new string[]
@@ -95,7 +102,7 @@ Task("Clean")
 Task("NuGetRestore")
     .Does(() =>
 {
-    NuGetRestore(SOLUTION_FILE, new NuGetRestoreSettings()
+    NuGetRestore(SOLUTION_PATH, new NuGetRestoreSettings()
 	{
 		Source = PACKAGE_SOURCE
 	});
@@ -109,7 +116,7 @@ Task("Build")
     .IsDependentOn("NuGetRestore")
     .Does(() =>
     {
-        DotNetBuild(SOLUTION_FILE, settings => settings
+        DotNetBuild(SOLUTION_PATH, settings => settings
             .WithTarget("Build")
             .SetConfiguration(configuration)
             .SetVerbosity(Verbosity.Minimal)
@@ -124,7 +131,7 @@ Task("Test")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
-		NUnit3(UNIT_TESTS);
+		NUnit3(UNIT_TEST_PATH);
 	});
 
 //////////////////////////////////////////////////////////////////////
@@ -137,7 +144,7 @@ Task("Package")
 	{
 		CreateDirectory(PACKAGE_DIR);
 
-        NuGetPack("vs-project-loader.nuspec", new NuGetPackSettings()
+        NuGetPack(NUSPEC_PATH, new NuGetPackSettings()
         {
             Version = packageVersion,
             BasePath = BIN_DIR,
