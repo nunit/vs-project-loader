@@ -8,7 +8,7 @@
     <owners>Charlie Poole</owners>
     <licenseUrl>http://nunit.org/nuget/nunit3-license.txt</licenseUrl>
     <projectUrl>http://nunit.org</projectUrl>
-    <iconUrl>http://nunit.org/nuget/nunitv3_32x32.png</iconUrl>
+    <iconUrl>https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>NUnit Engine extension for loading Visual Studio formatted projects.</summary>
     <description>This extension allows NUnit to recognize and load projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.</description>
