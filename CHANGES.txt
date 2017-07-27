@@ -1,0 +1,3 @@
+VS Project Loader Extension 3.5 - October 6, 2016
+
+  The first independent release of the vs-project-loader extension.

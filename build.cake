@@ -11,6 +11,8 @@ var SOLUTION_FILE = "vs-project-loader.sln";
 var UNIT_TEST_ASSEMBLY = "vs-project-loader.tests.dll";
 var GITHUB_SITE = "https://github.com/nunit/vs-project-loader";
 var WIKI_PAGE = "https://github.com/nunit/docs/wiki/Console-Command-Line";
+var NUGET_ID = "NUnit.Extension.VSProjectLoader";
+var CHOCO_ID = "nunit-extension-vs-project-loader";
 var VERSION = "3.6.0";
 
 // Metadata used in the nuget and chocolatey packages
@@ -20,7 +22,7 @@ var OWNERS = new [] { "Charlie Poole" };
 var DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
 var SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
 var COPYRIGHT = "Copyright (c) 2016 Charlie Poole";
-var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/nunit-project-loader/master/CHANGES.txt" };
+var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/master/CHANGES.txt" };
 var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
 
 //////////////////////////////////////////////////////////////////////
@@ -202,7 +204,7 @@ Task("RePackageNuGet")
 
         NuGetPack(new NuGetPackSettings()
         {
-			Id = "NUnit.Extension.NUnitProjectLoader",
+			Id = NUGET_ID,
 			Version = nugetVersion ?? packageVersion,
 			Title = TITLE,
 			Authors = AUTHORS,
@@ -220,6 +222,7 @@ Task("RePackageNuGet")
 			OutputDirectory = OUTPUT_DIR,
 			Files = new [] {
 				new NuSpecContent { Source = PROJECT_DIR + "LICENSE.txt" },
+				new NuSpecContent { Source = PROJECT_DIR + "CHANGES.txt" },
 				new NuSpecContent { Source = BIN_SRC + "vs-project-loader.dll", Target = "tools" }
 			}
         });
@@ -233,7 +236,7 @@ Task("RePackageNuGet")
 		ChocolateyPack(
 			new ChocolateyPackSettings()
 			{
-				Id = "nunit-extension-vs-project-loader",
+				Id = CHOCO_ID,
 				Version = chocoVersion ?? packageVersion,
 				Title = TITLE,
 				Authors = AUTHORS,
@@ -256,6 +259,7 @@ Task("RePackageNuGet")
 				OutputDirectory = OUTPUT_DIR,
 				Files = new [] {
 					new ChocolateyNuSpecContent { Source = PROJECT_DIR + "LICENSE.txt", Target = "tools" },
+					new ChocolateyNuSpecContent { Source = PROJECT_DIR + "CHANGES.txt", Target = "tools" },
 					new ChocolateyNuSpecContent { Source = PROJECT_DIR + "VERIFICATION.txt", Target = "tools" },
 					new ChocolateyNuSpecContent { Source = BIN_SRC + "vs-project-loader.dll", Target = "tools" }
 				}
