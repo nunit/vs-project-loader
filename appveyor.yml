@@ -8,4 +8,4 @@ build_script:
 test: off
 
 artifacts:
-- path: package\*.nupkg
+- path: output\*.nupkg
