@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vs-project-loader", "src\extension\vs-project-loader.csproj", "{96181317-7B6F-49F0-B283-6E804D41C8AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6217E5FA-D329-4278-9307-7FCF8F48E9F1}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake

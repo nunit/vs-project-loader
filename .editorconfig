@@ -1,0 +1,42 @@
+# EditorConfig helps developers define and
+# maintain consistent coding styles between
+# different editors and IDEs
+
+# http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+# Make selection with keyboard easier in all files
+insert_final_newline = true
+
+[*.proj]
+indent_size = 2
+
+[*.csproj]
+indent_size = 2
+
+[*.vcxproj]
+indent_size = 2
+
+[*.xproj]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+
+[*.config]
+indent_size = 2
+
+[*.nuspec]
+indent_size = 2
+
+[*.xml]
+indent_size = 2
+
+[*.cs]
+csharp_new_line_before_open_brace = all

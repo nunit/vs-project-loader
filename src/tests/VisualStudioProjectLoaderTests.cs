@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using NUnit.Engine.Extensibility;
 using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
@@ -119,6 +120,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TestCase("legacy-cpp-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
         [TestCase("legacy-cpp-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-cpp-library-with-macros")]
         [TestCase("legacy-cpp-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
+        [TestCase("netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "netcoreapp1.1-minimal")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
             Assert.That(_loader.CanLoadFrom(resourceName));
@@ -139,6 +141,18 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     Assert.That(package.Settings.ContainsKey("BasePath"));
                     Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
                 }
+            }
+        }
+
+        [TestCase("netcoreapp1.1-with-output-path.csproj", "Release", @"bin\Release\special")]
+        public void PicksUpCorrectOutputPath(string resourceName, string configuration, string expectedOutputPath)
+        {
+            using (TestResource file = new TestResource(resourceName))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+
+                var package = project.GetTestPackage(configuration);
+                Assert.That(package.Settings["BasePath"].ToString().EndsWith(expectedOutputPath));
             }
         }
 
