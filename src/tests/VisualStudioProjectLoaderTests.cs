@@ -144,6 +144,9 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
+        [TestCase("netcoreapp1.1-minimal.csproj", "Debug", @"bin\Debug\netcoreapp1.1")]
+        [TestCase("netcoreapp1.1-minimal.csproj", "Release", @"bin\Release\netcoreapp1.1")]
+        [TestCase("netcoreapp1.1-with-output-path.csproj", "Debug", @"bin\Debug\netcoreapp1.1")]
         [TestCase("netcoreapp1.1-with-output-path.csproj", "Release", @"bin\Release\special")]
         public void PicksUpCorrectOutputPath(string resourceName, string configuration, string expectedOutputPath)
         {

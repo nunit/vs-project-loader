@@ -285,13 +285,13 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     if (!_configs.ContainsKey("Debug"))
                     {
                         string configName = "Debug";
-                        string outputPath = $"bin/{configName}/{targetFramework}";
+                        string outputPath = $@"bin\{configName}\{targetFramework}";
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                     }
                     if (!_configs.ContainsKey("Release"))
                     {
                         string configName = "Release";
-                        string outputPath = $"bin/{configName}/{targetFramework}";
+                        string outputPath = $@"bin\{configName}\{targetFramework}";
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                     }
                 }
