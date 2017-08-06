@@ -159,6 +159,23 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
+        [TestCase("netcoreapp1.1-minimal.csproj", "netcoreapp1.1-minimal")]
+        [TestCase("netcoreapp1.1-with-assembly-name.csproj", "the-assembly-name")]
+        public void PicksUpCorrectAssemplyName(string resouresName, string expectedAssemblyName)
+        {
+            using (TestResource file = new TestResource(resouresName))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+
+                foreach(var config in project.ConfigNames)
+                {
+                    TestPackage package = project.GetTestPackage(config);
+
+                    Assert.That(Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName) == expectedAssemblyName);
+                }
+            }
+        }
+
         [Test]
         public void FromVSSolution2003()
         {

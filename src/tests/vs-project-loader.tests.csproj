@@ -103,6 +103,9 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\netcoreapp1.1-with-output-path.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\netcoreapp1.1-with-assembly-name.csproj" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

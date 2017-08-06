@@ -247,7 +247,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
 
                 XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
-                // Even console apps are dll's
+                // Even console apps are dll's even if <OutputType> has value 'EXE'
                 string assemblyName = assemblyNameNode == null ? $"{Name}.dll" : $"{assemblyNameNode.InnerText}.dll";
 
                 XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
@@ -276,10 +276,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                 }
 
-                // By convention there is a Debug and Release configuration unless others are explicitly 
+                // By convention there is a Debug and a Release configuration unless others are explicitly 
                 // mentioned in the project file. If we have less than 2 then at least one of those is missing.
                 // We cannot tell however if the existing configuration is meant to replace Debug or Release.
-                // Therefore we just add both if both are missing. The one that has been replaced will not be called.
+                // Therefore we just add what is missing. The one that has been replaced will not be used.
                 if (_configs.Count < 2)
                 {
                     if (!_configs.ContainsKey("Debug"))
