@@ -187,17 +187,23 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 ThrowInvalidFileType( ProjectPath );
 
             StreamReader rdr = new StreamReader(ProjectPath, System.Text.Encoding.UTF8);
-            
+
             try
             {
                 _doc = new XmlDocument();
-                _doc.Load( rdr );
+                _doc.Load(rdr);
 
-                string extension = Path.GetExtension( ProjectPath );
+                string extension = Path.GetExtension(ProjectPath);
 
-                switch ( extension )
+                switch (extension)
                 {
                     case ".csproj":
+                        // We try legacy project first, then new format for .NET Core projects
+                        if (!TryLoadLegacyProject())
+                            if (!TryLoadDotNetCoreProject())
+                                LoadMSBuildProject();
+                        break;
+
                     case ".vbproj":
                     case ".vjsproj":
                     case ".fsproj":
@@ -226,6 +232,74 @@ namespace NUnit.Engine.Services.ProjectLoaders
             {
                 rdr.Close();
             }
+        }
+
+        /// <summary>
+        /// Load a project in the new project format for .NET Core 1.0/1.1. Note that this method
+        /// is only called for file extensions .csproj.
+        /// </summary>
+        /// <returns>True if the project was successfully loaded, false otherwise.</returns>
+        private bool TryLoadDotNetCoreProject() {
+            XmlNode root = _doc.SelectSingleNode("Project");
+
+            if (root != null && SafeAttributeValue(root, "Sdk") != null) 
+            {
+                string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
+
+                XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
+                // Even console apps are dll's even if <OutputType> has value 'EXE'
+                string assemblyName = assemblyNameNode == null ? $"{Name}.dll" : $"{assemblyNameNode.InnerText}.dll";
+
+                XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
+
+                string commonOutputPath = null;
+
+                foreach (XmlElement configNode in nodes)
+                {
+                    string configName = GetConfigNameFromCondition(configNode);
+
+                    XmlElement outputPathElement = (XmlElement)configNode.SelectSingleNode("OutputPath");
+                    string outputPath = null;
+                    if (outputPathElement != null)
+                        outputPath = outputPathElement.InnerText;
+
+                    if (configName == null)
+                    {
+                        commonOutputPath = outputPath;
+                        continue;
+                    }
+
+                    if (outputPath == null)
+                        outputPath = commonOutputPath;
+
+                    if (outputPath != null)
+                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                }
+
+                // By convention there is a Debug and a Release configuration unless others are explicitly 
+                // mentioned in the project file. If we have less than 2 then at least one of those is missing.
+                // We cannot tell however if the existing configuration is meant to replace Debug or Release.
+                // Therefore we just add what is missing. The one that has been replaced will not be used.
+                if (_configs.Count < 2)
+                {
+                    if (!_configs.ContainsKey("Debug"))
+                    {
+                        string configName = "Debug";
+                        string outputPath = $@"bin\{configName}\{targetFramework}";
+                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                    }
+                    if (!_configs.ContainsKey("Release"))
+                    {
+                        string configName = "Release";
+                        string outputPath = $@"bin\{configName}\{targetFramework}";
+                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
