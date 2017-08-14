@@ -73,7 +73,9 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\csharp-debug-only-no-nunit.csproj" />
     <EmbeddedResource Include="resources\csharp-debug-only.csproj" />
+    <EmbeddedResource Include="resources\csharp-missing-assembly-name.csproj" />
     <EmbeddedResource Include="resources\csharp-missing-output-path.csproj" />
+    <EmbeddedResource Include="resources\csharp-missing-output-type.csproj" />
     <EmbeddedResource Include="resources\csharp-sample.csproj" />
     <EmbeddedResource Include="resources\csharp-sample_noplatform.csproj" />
     <EmbeddedResource Include="resources\csharp-xna-project.csproj" />
