@@ -82,5 +82,17 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             VSProject project = new VSProject(Path.Combine(Path.GetTempPath(), "invalid.csproj"));
             Assert.AreEqual(0, project.ConfigNames.Count);
         }
+
+        [TestCase("csharp-missing-output-type.csproj", "OutputType")]
+        [TestCase("csharp-missing-assembly-name.csproj", "AssemblyName")]
+        public void MissingRequiredXmlElements(string projectName, string missingElementName)
+        {
+            using (TestResource file = new TestResource(projectName))
+            {
+                ArgumentException thrownException = Assert.Throws<ArgumentException>(() => new VSProject(file.Path));
+                Assert.IsNotNull(thrownException.InnerException);
+                Assert.That(thrownException.InnerException.Message, Does.Contain(missingElementName));
+            }
+        }
     }
 }
