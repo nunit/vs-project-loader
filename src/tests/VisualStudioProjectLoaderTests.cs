@@ -263,7 +263,20 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count, "Release should have 2 assemblies");
+                Assert.AreEqual(2, project.GetTestPackage("Release").SubPackages.Count, "Release should have 2 assemblies");
+                Assert.AreEqual(2, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 2 assemblies");
+            }
+        }
+
+        [Test]
+        public void FromSolutinoWithProjectUsingPackageReference()
+        {
+            using (new TestResource("project-with-package-reference.csproj", NormalizePath(@"project-with-package-reference\project-with-package-reference.csproj")))
+            using(TestResource file = new TestResource("solution-with-package-reference.sln"))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+                Assert.AreEqual(2, project.ConfigNames.Count);
+                Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count, "Release should have 1 assemblies");
                 Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 1 assembly");
             }
         }
