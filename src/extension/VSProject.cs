@@ -348,14 +348,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
             MsBuildDocument = _doc;
 
             XmlElement assemblyNameElement = (XmlElement)_doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:AssemblyName", namespaceManager);
-            if (assemblyNameElement == null)
-                throw new ApplicationException("Missing required element AssemblyName");
-            string assemblyName = assemblyNameElement.InnerText;
+            string assemblyName = assemblyNameElement == null ? Name : assemblyNameElement.InnerText;
 
             XmlElement outputTypeElement = (XmlElement)_doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:OutputType", namespaceManager);
-            if (outputTypeElement == null)
-                throw new ApplicationException("Missing required element OutputType");
-            string outputType = outputTypeElement.InnerText;
+            string outputType = outputTypeElement == null ? "Library" : outputTypeElement.InnerText;
 
             if (outputType == "Exe" || outputType == "WinExe")
                 assemblyName = assemblyName + ".exe";

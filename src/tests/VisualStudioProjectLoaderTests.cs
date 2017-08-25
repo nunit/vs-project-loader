@@ -178,6 +178,23 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
+        [TestCase("csharp-missing-assembly-name.csproj", "csharp-missing-assembly-name.exe")]
+        [TestCase("csharp-missing-output-type.csproj", "MissingOutputType.dll")]
+        public void PicksUpCorrectMsBuildProperty(string resourceName, string expectedOutputFilename)
+        {
+            using (TestResource file = new TestResource(resourceName))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+
+                foreach (var config in project.ConfigNames)
+                {
+                    TestPackage package = project.GetTestPackage(config);
+
+                    Assert.AreEqual(Path.GetFileName(package.SubPackages[0].FullName), expectedOutputFilename);
+                }
+            }
+        }
+
         [Test]
         public void FromVSSolution2003()
         {
