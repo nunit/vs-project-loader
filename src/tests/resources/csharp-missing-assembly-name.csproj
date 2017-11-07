@@ -5,7 +5,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6BF38215-C9D9-418D-9D81-4DECBA679223}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MissingAssemblyName</RootNamespace>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
