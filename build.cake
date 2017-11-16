@@ -58,31 +58,31 @@ if (BuildSystem.IsRunningOnAppVeyor)
 	}
 	else
 	{
-		var buildNumber = AppVeyor.Environment.Build.Number.ToString("00000");
-		var branch = AppVeyor.Environment.Repository.Branch;
-		var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
+        var buildNumber = AppVeyor.Environment.Build.Number.ToString("00000");
+        var branch = AppVeyor.Environment.Repository.Branch;
+        var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 
-		if (branch == "master" && !isPullRequest)
-		{
-			packageVersion = VERSION + "-dev-" + buildNumber + dbgSuffix;
-		}
-		else
-		{
-			var suffix = "-ci-" + buildNumber + dbgSuffix;
+        if (branch == "master" && !isPullRequest)
+        {
+            packageVersion = VERSION + "-dev-" + buildNumber + dbgSuffix;
+        }
+        else
+        {
+            var suffix = "-ci-" + buildNumber + dbgSuffix;
 
-			if (isPullRequest)
-				suffix += "-pr-" + AppVeyor.Environment.PullRequest.Number;
-			else
-				suffix += "-" + branch;
+            if (isPullRequest)
+                suffix += "-pr-" + AppVeyor.Environment.PullRequest.Number;
+            else if (AppVeyor.Environment.Repository.Branch.StartsWith("release", StringComparison.OrdinalIgnoreCase))
+                suffix += "-pre-" + buildNumber;
+            else
+                suffix += "-" + System.Text.RegularExpressions.Regex.Replace(branch, "[^0-9A-Za-z-]+", "-");
 
-			// Nuget limits "special version part" to 20 chars. Add one for the hyphen.
-			if (suffix.Length > 21)
-				suffix = suffix.Substring(0, 21);
+            // Nuget limits "special version part" to 20 chars. Add one for the hyphen.
+            if (suffix.Length > 21)
+                suffix = suffix.Substring(0, 21);
 
-                        suffix = suffix.Replace(".", "");
-
-			packageVersion = VERSION + suffix;
-		}
+            packageVersion = VERSION + suffix;
+        }
 	}
 
 	AppVeyor.UpdateBuildVersion(packageVersion);
