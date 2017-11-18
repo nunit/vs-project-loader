@@ -13,7 +13,7 @@ var GITHUB_SITE = "https://github.com/nunit/vs-project-loader";
 var WIKI_PAGE = "https://github.com/nunit/docs/wiki/Console-Command-Line";
 var NUGET_ID = "NUnit.Extension.VSProjectLoader";
 var CHOCO_ID = "nunit-extension-vs-project-loader";
-var VERSION = "3.6.0";
+var VERSION = "3.7.0";
 
 // Metadata used in the nuget and chocolatey packages
 var TITLE = "NUnit 3 - Visual Studio Project Loader Extension";
@@ -21,7 +21,7 @@ var AUTHORS = new [] { "Charlie Poole" };
 var OWNERS = new [] { "Charlie Poole" };
 var DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
 var SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
-var COPYRIGHT = "Copyright (c) 2016 Charlie Poole";
+var COPYRIGHT = "Copyright (c) 2017 Charlie Poole";
 var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/master/CHANGES.txt" };
 var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
 
@@ -58,31 +58,31 @@ if (BuildSystem.IsRunningOnAppVeyor)
 	}
 	else
 	{
-		var buildNumber = AppVeyor.Environment.Build.Number.ToString("00000");
-		var branch = AppVeyor.Environment.Repository.Branch;
-		var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
+        var buildNumber = AppVeyor.Environment.Build.Number.ToString("00000");
+        var branch = AppVeyor.Environment.Repository.Branch;
+        var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 
-		if (branch == "master" && !isPullRequest)
-		{
-			packageVersion = VERSION + "-dev-" + buildNumber + dbgSuffix;
-		}
-		else
-		{
-			var suffix = "-ci-" + buildNumber + dbgSuffix;
+        if (branch == "master" && !isPullRequest)
+        {
+            packageVersion = VERSION + "-dev-" + buildNumber + dbgSuffix;
+        }
+        else
+        {
+            var suffix = "-ci-" + buildNumber + dbgSuffix;
 
-			if (isPullRequest)
-				suffix += "-pr-" + AppVeyor.Environment.PullRequest.Number;
-			else
-				suffix += "-" + branch;
+            if (isPullRequest)
+                suffix += "-pr-" + AppVeyor.Environment.PullRequest.Number;
+            else if (AppVeyor.Environment.Repository.Branch.StartsWith("release", StringComparison.OrdinalIgnoreCase))
+                suffix += "-pre-" + buildNumber;
+            else
+                suffix += "-" + System.Text.RegularExpressions.Regex.Replace(branch, "[^0-9A-Za-z-]+", "-");
 
-			// Nuget limits "special version part" to 20 chars. Add one for the hyphen.
-			if (suffix.Length > 21)
-				suffix = suffix.Substring(0, 21);
+            // Nuget limits "special version part" to 20 chars. Add one for the hyphen.
+            if (suffix.Length > 21)
+                suffix = suffix.Substring(0, 21);
 
-                        suffix = suffix.Replace(".", "");
-
-			packageVersion = VERSION + suffix;
-		}
+            packageVersion = VERSION + suffix;
+        }
 	}
 
 	AppVeyor.UpdateBuildVersion(packageVersion);
