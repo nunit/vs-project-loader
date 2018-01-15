@@ -121,13 +121,24 @@ namespace NUnit.Engine.Services.ProjectLoaders
             string appbase = null;
             foreach (var name in _configs.Keys)
             {
-                if (configName == null || configName == name)
+                if (configName == null)
                 {
                     var config = _configs[name];
                     package.AddSubPackage(new TestPackage(config.AssemblyPath));
                     appbase = config.OutputDirectory;
+
                     break;
                 }
+
+                if (configName == name)
+                {
+                    var config = _configs[name];
+                    package.AddSubPackage(new TestPackage(config.AssemblyPath.Replace("$(Configuration)", configName)));
+                    appbase = config.OutputDirectory.Replace("$(Configuration)", configName);
+
+                    break;
+                }
+
             }
 
             if (appbase != null)
