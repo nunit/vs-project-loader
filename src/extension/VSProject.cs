@@ -47,7 +47,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// VS Project extentions
         /// </summary>
         private static readonly string[] PROJECT_EXTENSIONS = { ".csproj", ".vbproj", ".vjsproj", ".vcproj", ".fsproj" };
-        
+
         /// <summary>
         /// VS Solution extension
         /// </summary>
@@ -67,9 +67,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         #region Constructor
 
-        public VSProject( string projectPath )
+        public VSProject(string projectPath)
         {
-            ProjectPath = Path.GetFullPath( projectPath );
+            ProjectPath = Path.GetFullPath(projectPath);
 
             Load();
         }
@@ -121,7 +121,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
             string appbase = null;
             foreach (var name in _configs.Keys)
             {
-                if (configName == null)
+                if (configName == null || configName == name)
                 {
                     var config = _configs[name];
                     package.AddSubPackage(new TestPackage(config.AssemblyPath));
@@ -129,16 +129,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                     break;
                 }
-
-                if (configName == name)
-                {
-                    var config = _configs[name];
-                    package.AddSubPackage(new TestPackage(config.AssemblyPath.Replace("$(Configuration)", configName)));
-                    appbase = config.OutputDirectory.Replace("$(Configuration)", configName);
-
-                    break;
-                }
-
             }
 
             if (appbase != null)
@@ -156,33 +146,33 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// </summary>
         public string Name
         {
-            get { return Path.GetFileNameWithoutExtension( ProjectPath ); }
+            get { return Path.GetFileNameWithoutExtension(ProjectPath); }
         }
 
         #endregion
 
         #region Public Methods
 
-        public static bool IsProjectFile( string path )
+        public static bool IsProjectFile(string path)
         {
             if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
                 return false;
 
-            if ( path.ToLower().IndexOf( "http:" ) >= 0 )
+            if (path.ToLower().IndexOf("http:") >= 0)
                 return false;
-        
-            string extension = Path.GetExtension( path );
 
-            foreach( string validExtension in PROJECT_EXTENSIONS )
-                if ( extension == validExtension )
+            string extension = Path.GetExtension(path);
+
+            foreach (string validExtension in PROJECT_EXTENSIONS)
+                if (extension == validExtension)
                     return true;
 
             return false;
         }
 
-        public static bool IsSolutionFile( string path )
+        public static bool IsSolutionFile(string path)
         {
-            return Path.GetExtension( path ) == SOLUTION_EXTENSION;
+            return Path.GetExtension(path) == SOLUTION_EXTENSION;
         }
 
         #endregion
@@ -194,8 +184,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// </summary>
         private void Load()
         {
-            if ( !IsProjectFile( ProjectPath ) ) 
-                ThrowInvalidFileType( ProjectPath );
+            if (!IsProjectFile(ProjectPath))
+                ThrowInvalidFileType(ProjectPath);
 
             StreamReader rdr = new StreamReader(ProjectPath, System.Text.Encoding.UTF8);
 
@@ -250,10 +240,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// is only called for file extensions .csproj.
         /// </summary>
         /// <returns>True if the project was successfully loaded, false otherwise.</returns>
-        private bool TryLoadDotNetCoreProject() {
+        private bool TryLoadDotNetCoreProject()
+        {
             XmlNode root = _doc.SelectSingleNode("Project");
 
-            if (root != null && SafeAttributeValue(root, "Sdk") != null) 
+            if (root != null && SafeAttributeValue(root, "Sdk") != null)
             {
                 string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
 
@@ -382,7 +373,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 if (name == null)
                 {
-                    commonOutputPath = outputPath;
+                    if (outputPathElement != null)
+                        commonOutputPath = outputPath;
                     continue;
                 }
 
@@ -390,7 +382,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     outputPath = commonOutputPath;
 
                 if (outputPath != null)
-                    _configs.Add(name, new ProjectConfig(this, name, outputPath, assemblyName));
+                    _configs.Add(name, new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName));
+
             }
         }
 
@@ -508,7 +501,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
             public string OutputDirectory
             {
-                get { return Normalize(Path.Combine(Path.GetDirectoryName(_project.ProjectPath), _outputPath));  }
+                get { return Normalize(Path.Combine(Path.GetDirectoryName(_project.ProjectPath), _outputPath)); }
             }
 
             public string AssemblyPath
