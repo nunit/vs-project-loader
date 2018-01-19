@@ -298,6 +298,35 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
+        [Test]
+        public void FromProjectWithParametrizedPaths()
+        {
+            using (var file = new TestResource("TestDynamicPaths.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+                Assert.AreEqual(3, project.ConfigNames.Count);
+
+                var debugPackage = project.GetTestPackage("Debug");
+                Assert.AreEqual(1, debugPackage.SubPackages.Count, "Debug should have 1 assembly");
+
+                Assert.That(!debugPackage.SubPackages[0].FullName.Contains(@"$(Configuration)"),
+                    "Assembly path contains '$(Configuration)' which should be replaced with config name.");
+
+                Assert.That(debugPackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\.bin\Debug\TestDynamicPathsAssembly\TestDynamicPathsAssembly.dll"),
+                    "Invalid Debug assembly path");
+
+                var releasePackage = project.GetTestPackage("Release");
+                Assert.AreEqual(1, releasePackage.SubPackages.Count, "Release should have 1 assemblies");
+                Assert.That(releasePackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\.bin\Release\TestDynamicPathsAssembly\TestDynamicPathsAssembly.dll"),
+                    "Invalid Release assembly path");
+
+                var fixedPathPackage = project.GetTestPackage("FixedPath");
+                Assert.AreEqual(1, fixedPathPackage.SubPackages.Count, "FixedPath should have 1 assemblies");
+                Assert.That(fixedPathPackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\FixedPath\TestDynamicPathsAssembly.dll"),
+                    "Invalid FixedPath assembly path");
+            }
+        }
+
         private string NormalizePath(string path)
         {
             return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
