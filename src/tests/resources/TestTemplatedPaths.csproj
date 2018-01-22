@@ -5,11 +5,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>TestDynamicPaths</RootNamespace>
-    <AssemblyName>TestDynamicPathsAssembly</AssemblyName>
+    <RootNamespace>TestTemplatedPaths</RootNamespace>
+    <AssemblyName>TestTemplatedPathsAssembly</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <BaseIntermediateOutputPath>.obj\TestDynamicPathsAssembly</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>.obj\TestTemplatedPathsAssembly</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -18,9 +18,9 @@
     <DelaySign>False</DelaySign>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <NoWin32Manifest>False</NoWin32Manifest>
-    <IntermediateOutputPath>.obj\TestDynamicPathsAssembly\$(Configuration)\</IntermediateOutputPath>
+    <IntermediateOutputPath>.obj\TestTemplatedPathsAssembly\$(Configuration)\</IntermediateOutputPath>
     <TargetFrameworkProfile />
-    <OutputPath>.bin\$(Configuration)\TestDynamicPathsAssembly\</OutputPath>
+    <OutputPath>.bin\$(Configuration)\TestTemplatedPathsAssembly\</OutputPath>
     <RunCodeAnalysis>False</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
@@ -93,7 +93,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\TestDynamicPathsAssembly.cs" />
+    <Compile Include="Domain\TestTemplatedPathsAssembly.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
