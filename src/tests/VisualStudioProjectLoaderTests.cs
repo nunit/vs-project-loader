@@ -312,17 +312,17 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 Assert.That(debugPackage.SubPackages[0].FullName, Does.Not.Contain(@"$(Configuration)"),
                     "Assembly path contains '$(Configuration)' which should be replaced with config name.");
 
-                Assert.That(debugPackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\.bin\Debug\TestTemplatedPathsAssembly\TestTemplatedPathsAssembly.dll"),
+                Assert.That(debugPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\.bin\Debug\TestTemplatedPathsAssembly\TestTemplatedPathsAssembly.dll")),
                     "Invalid Debug assembly path");
 
                 var releasePackage = project.GetTestPackage("Release");
                 Assert.AreEqual(1, releasePackage.SubPackages.Count, "Release should have 1 assemblies");
-                Assert.That(releasePackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\.bin\Release\TestTemplatedPathsAssembly\TestTemplatedPathsAssembly.dll"),
+                Assert.That(releasePackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\.bin\Release\TestTemplatedPathsAssembly\TestTemplatedPathsAssembly.dll")),
                     "Invalid Release assembly path");
 
                 var fixedPathPackage = project.GetTestPackage("FixedPath");
                 Assert.AreEqual(1, fixedPathPackage.SubPackages.Count, "FixedPath should have 1 assemblies");
-                Assert.That(fixedPathPackage.SubPackages[0].FullName.EndsWith(@"\csharp-sample\FixedPath\TestTemplatedPathsAssembly.dll"),
+                Assert.That(fixedPathPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\FixedPath\TestTemplatedPathsAssembly.dll")),
                     "Invalid FixedPath assembly path");
             }
         }
