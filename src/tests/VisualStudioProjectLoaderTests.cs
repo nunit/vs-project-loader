@@ -327,6 +327,22 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
+        [Test]
+        public void ProjectWithDuplicatedSections()
+        {
+            using (var file = new TestResource("test-duplicated-key-project.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+                Assert.AreEqual(2, project.ConfigNames.Count);
+
+                var debugPackage = project.GetTestPackage("Debug");
+                Assert.AreEqual(1, debugPackage.SubPackages.Count, "Debug should have 1 assembly");
+
+                var releasePackage = project.GetTestPackage("Release");
+                Assert.AreEqual(1, releasePackage.SubPackages.Count, "Release should have 1 assembly");
+            }
+        }
+
         private string NormalizePath(string path)
         {
             return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
