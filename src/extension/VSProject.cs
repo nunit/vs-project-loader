@@ -382,7 +382,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     outputPath = commonOutputPath;
 
                 if (outputPath != null)
-                    _configs.Add(name, new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName));
+                    _configs[name] = new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName);
 
             }
         }
