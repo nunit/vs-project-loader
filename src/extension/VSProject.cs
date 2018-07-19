@@ -249,8 +249,33 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
 
                 XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
-                // Even console apps are dll's even if <OutputType> has value 'EXE'
-                string assemblyName = assemblyNameNode == null ? $"{Name}.dll" : $"{assemblyNameNode.InnerText}.dll";
+                
+                // Even console apps are dll's even if <OutputType> has value 'EXE',
+                // if TargetFramework is netcore
+                string outputType = "dll";
+
+                if (!targetFramework.StartsWith("netcore"))
+                {
+                    // When targetting standard .Net framework, the default is still dll,
+                    // however, OutputType is now honoured.
+                    // Also if Sdk = 'Microsoft.NET.Sdk.Web' then OutputType default is exe
+                    string sdk = root.Attributes["Sdk"].Value;
+
+                    if (sdk == "Microsoft.NET.Sdk.Web")
+                    {
+                        outputType = "exe";
+                    }
+                    else
+                    {
+                        XmlNode outputTypeNode = _doc.SelectSingleNode("Project/PropertyGroup/OutputType");
+                        if (outputTypeNode != null)
+                        {
+                            outputType = outputTypeNode.InnerText;
+                        }
+                    }
+                }
+
+                string assemblyName = assemblyNameNode == null ? $"{Name}.{outputType}" : $"{assemblyNameNode.InnerText}.{outputType}";
 
                 XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
 
