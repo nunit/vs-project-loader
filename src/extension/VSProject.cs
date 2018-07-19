@@ -361,6 +361,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 assemblyName = assemblyName + ".dll";
 
             string commonOutputPath = null;
+            var explicitOutputPaths = new Dictionary<string, string>();
 
             foreach (XmlElement configNode in nodes)
             {
@@ -378,8 +379,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     continue;
                 }
 
+                if (outputPathElement != null)
+                    explicitOutputPaths[name] = outputPath;
+
                 if (outputPath == null)
-                    outputPath = commonOutputPath;
+                    outputPath = explicitOutputPaths.ContainsKey(name) ? explicitOutputPaths[name] : commonOutputPath;
 
                 if (outputPath != null)
                     _configs[name] = new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName);

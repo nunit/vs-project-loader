@@ -333,13 +333,19 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (var file = new TestResource("test-duplicated-key-project.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
+                Assert.AreEqual(3, project.ConfigNames.Count);
 
                 var debugPackage = project.GetTestPackage("Debug");
                 Assert.AreEqual(1, debugPackage.SubPackages.Count, "Debug should have 1 assembly");
 
                 var releasePackage = project.GetTestPackage("Release");
                 Assert.AreEqual(1, releasePackage.SubPackages.Count, "Release should have 1 assembly");
+
+                var secondDebugPackage = project.GetTestPackage("Debug2ndTest");
+                Assert.AreEqual(1, secondDebugPackage.SubPackages.Count, "Debug2ndTest should have 1 assembly");
+                Assert.AreEqual(1, secondDebugPackage.SubPackages.Count, "Debug2ndTest should have 1 assemblies");
+                Assert.That(secondDebugPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\Debug2ndTest\SecondTest\Test.exe")),
+                    "Invalid Debug2ndTest assembly path");
             }
         }
 

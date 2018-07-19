@@ -71,4 +71,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release' ">
     <DefineConstants>TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug2ndTest' ">
+    <OutputPath>$(Configuration)\SecondTest\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug2ndTest' ">
+    <Optimize>False</Optimize>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
 </Project>
