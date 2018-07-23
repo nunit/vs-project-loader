@@ -133,6 +133,9 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\netstd2.0-minimal-exe.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\test-duplicated-key-project.csproj" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
