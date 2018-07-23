@@ -268,9 +268,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     else
                     {
                         XmlNode outputTypeNode = _doc.SelectSingleNode("Project/PropertyGroup/OutputType");
-                        if (outputTypeNode != null)
+                        if (outputTypeNode != null && outputTypeNode.InnerText != "Library")
                         {
-                            outputType = outputTypeNode.InnerText;
+                            outputType = "exe";
                         }
                     }
                 }
