@@ -161,8 +161,16 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
-        [TestCase("netcoreapp1.1-minimal.csproj", "netcoreapp1.1-minimal")]
-        [TestCase("netcoreapp1.1-with-assembly-name.csproj", "the-assembly-name")]
+        [TestCase("netcoreapp1.1-minimal.csproj", "netcoreapp1.1-minimal.dll")]
+        [TestCase("netcoreapp1.1-with-assembly-name.csproj", "the-assembly-name.dll")]
+        [TestCase("netcoreapp2.0-minimal-dll.csproj", "netcoreapp2.0-minimal-dll.dll")]
+        [TestCase("netcoreapp2.0-minimal-exe.csproj", "netcoreapp2.0-minimal-exe.dll")]
+        [TestCase("netcoreapp2.0-minimal-web.csproj", "netcoreapp2.0-minimal-web.dll")]
+        [TestCase("netcoreapp2.0-with-assembly-name-exe.csproj", "the-assembly-name.dll")]
+        [TestCase("netcorefmwk-minimal-exe.csproj", "netcorefmwk-minimal-exe.exe")]
+        [TestCase("netcorefmwk-minimal-web.csproj", "netcorefmwk-minimal-web.exe")]
+        [TestCase("netcorefmwk-with-assembly-name-dll.csproj", "the-assembly-name.dll")]
+        [TestCase("netcorefmwk-with-assembly-name-exe.csproj", "the-assembly-name.exe")]
         public void PicksUpCorrectAssemblyName(string resourceName, string expectedAssemblyName)
         {
             using (TestResource file = new TestResource(resourceName))
@@ -173,7 +181,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 {
                     TestPackage package = project.GetTestPackage(config);
 
-                    Assert.That(Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName) == expectedAssemblyName);
+                    Assert.That(Path.GetFileName(package.SubPackages[0].FullName) == expectedAssemblyName);
                 }
             }
         }

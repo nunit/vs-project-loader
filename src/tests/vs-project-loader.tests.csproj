@@ -115,6 +115,18 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\TestTemplatedPaths.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-dll.csproj" />
+    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-exe.csproj" />
+    <EmbeddedResource Include="resources\netcoreapp2.0-with-assembly-name-exe.csproj" />
+    <EmbeddedResource Include="resources\netcorefmwk-minimal-exe.csproj" />
+    <EmbeddedResource Include="resources\netcorefmwk-with-assembly-name-dll.csproj" />
+    <EmbeddedResource Include="resources\netcorefmwk-with-assembly-name-exe.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-web.csproj" />
+    <EmbeddedResource Include="resources\netcorefmwk-minimal-web.csproj" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
