@@ -53,6 +53,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// </summary>
         private const string SOLUTION_EXTENSION = ".sln";
 
+        private static readonly Regex netFramework = new Regex("^net[1-9]+");
+
         /// <summary>
         /// The XML representation of the project
         /// </summary>
@@ -254,7 +256,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 // if TargetFramework is netcore
                 string outputType = "dll";
 
-                if (!targetFramework.StartsWith("netcore"))
+                if (netFramework.IsMatch(targetFramework))
                 {
                     // When targetting standard .Net framework, the default is still dll,
                     // however, OutputType is now honoured.

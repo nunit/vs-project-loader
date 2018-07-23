@@ -171,6 +171,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TestCase("netcorefmwk-minimal-web.csproj", "netcorefmwk-minimal-web.exe")]
         [TestCase("netcorefmwk-with-assembly-name-dll.csproj", "the-assembly-name.dll")]
         [TestCase("netcorefmwk-with-assembly-name-exe.csproj", "the-assembly-name.exe")]
+        [TestCase("netstd2.0-minimal-dll.csproj", "netstd2.0-minimal-dll.dll")]
+        [TestCase("netstd2.0-minimal-exe.csproj", "netstd2.0-minimal-exe.dll")]
         public void PicksUpCorrectAssemblyName(string resourceName, string expectedAssemblyName)
         {
             using (TestResource file = new TestResource(resourceName))
