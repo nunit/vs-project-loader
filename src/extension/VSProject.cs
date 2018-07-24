@@ -53,6 +53,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// </summary>
         private const string SOLUTION_EXTENSION = ".sln";
 
+        private static readonly Regex netFramework = new Regex("^net[1-9]");
+
         /// <summary>
         /// The XML representation of the project
         /// </summary>
@@ -249,8 +251,33 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
 
                 XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
-                // Even console apps are dll's even if <OutputType> has value 'EXE'
-                string assemblyName = assemblyNameNode == null ? $"{Name}.dll" : $"{assemblyNameNode.InnerText}.dll";
+                
+                // Even console apps are dll's even if <OutputType> has value 'EXE',
+                // if TargetFramework is netcore
+                string outputType = "dll";
+
+                if (netFramework.IsMatch(targetFramework))
+                {
+                    // When targetting standard .Net framework, the default is still dll,
+                    // however, OutputType is now honoured.
+                    // Also if Sdk = 'Microsoft.NET.Sdk.Web' then OutputType default is exe
+                    string sdk = root.Attributes["Sdk"].Value;
+
+                    if (sdk == "Microsoft.NET.Sdk.Web")
+                    {
+                        outputType = "exe";
+                    }
+                    else
+                    {
+                        XmlNode outputTypeNode = _doc.SelectSingleNode("Project/PropertyGroup/OutputType");
+                        if (outputTypeNode != null && outputTypeNode.InnerText != "Library")
+                        {
+                            outputType = "exe";
+                        }
+                    }
+                }
+
+                string assemblyName = assemblyNameNode == null ? $"{Name}.{outputType}" : $"{assemblyNameNode.InnerText}.{outputType}";
 
                 XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
 
@@ -387,7 +414,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 if (outputPath != null)
                     _configs[name] = new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName);
-
             }
         }
 
