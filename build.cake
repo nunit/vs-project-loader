@@ -276,6 +276,7 @@ Task("Rebuild")
 
 Task("Package")
 	.IsDependentOn("Build")
+	.IsDependentOn("Test")
 	.IsDependentOn("RePackage");
 
 Task("RePackage")
