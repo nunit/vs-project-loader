@@ -21,7 +21,7 @@ var AUTHORS = new [] { "Charlie Poole" };
 var OWNERS = new [] { "Charlie Poole" };
 var DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
 var SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
-var COPYRIGHT = "Copyright (c) 2017 Charlie Poole";
+var COPYRIGHT = "Copyright (c) 2018 Charlie Poole";
 var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/master/CHANGES.txt" };
 var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
 
