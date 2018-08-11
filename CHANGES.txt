@@ -1,3 +1,13 @@
+VS Project Loader Extension 3.8 - August 11, 2018
+
+  Miscellaneous bug fixes.
+
+  Issues Resolved
+
+   * 22 Fixes returned path when it contains $(Configuration) segment 
+   * 24 Fixes problem with projects containing duplicated sections 
+   * 27 NUnit console run fails on asp.net core project file
+
 VS Project Loader Extension 3.7 - November 18, 2017
 
   Added support for new .csproj file format, and resolved issue with missing
