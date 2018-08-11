@@ -13,7 +13,7 @@ var GITHUB_SITE = "https://github.com/nunit/vs-project-loader";
 var WIKI_PAGE = "https://github.com/nunit/docs/wiki/Console-Command-Line";
 var NUGET_ID = "NUnit.Extension.VSProjectLoader";
 var CHOCO_ID = "nunit-extension-vs-project-loader";
-var VERSION = "3.8.0";
+var VERSION = "3.9.0";
 
 // Metadata used in the nuget and chocolatey packages
 var TITLE = "NUnit 3 - Visual Studio Project Loader Extension";
