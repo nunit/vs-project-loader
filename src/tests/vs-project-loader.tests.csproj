@@ -2,7 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- If adding/updating TargetFrameworks, also update build.cake -->
-    <TargetFrameworks>net20;netcoreapp2.1</TargetFrameworks>
+    <TargetFramework>net20</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>NUnit.Engine.Tests</RootNamespace>
     <AssemblyName>vs-project-loader.tests</AssemblyName>
