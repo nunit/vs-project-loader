@@ -30,7 +30,7 @@ var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
+var configuration = Argument("configuration", "Release");
 
 // Special (optional) arguments for the script. You pass these
 // through the Cake bootscrap script via the -ScriptArgs argument
