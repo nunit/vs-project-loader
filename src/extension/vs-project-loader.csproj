@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- If adding/updating TargetFrameworks, also update build.cake -->
     <TargetFramework>net20</TargetFramework>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>NUnit.Engine.Services.ProjectLoaders</RootNamespace>
     <AssemblyName>vs-project-loader</AssemblyName>
