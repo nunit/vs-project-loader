@@ -1,3 +1,4 @@
+#tool nuget:?package=GitVersion.CommandLine&version=5.0.0
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
 
 //////////////////////////////////////////////////////////////////////
@@ -11,61 +12,6 @@
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", DEFAULT_CONFIGURATION);
-
-// Special (optional) arguments for the script. You pass these
-// through the Cake bootscrap script via the -ScriptArgs argument
-// for example: 
-//   ./build.ps1 -t RePackageNuget -ScriptArgs --nugetVersion="3.9.9"
-//   ./build.ps1 -t RePackageNuget -ScriptArgs '--binaries="rel3.9.9" --nugetVersion="3.9.9"'
-var nugetVersion = Argument("nugetVersion", (string)null);
-var chocoVersion = Argument("chocoVersion", (string)null);
-
-//////////////////////////////////////////////////////////////////////
-// SET PACKAGE VERSION
-//////////////////////////////////////////////////////////////////////
-
-var packageVersion = DEFAULT_VERSION;
-
-if (BuildSystem.IsRunningOnAppVeyor)
-{
-	var tag = AppVeyor.Environment.Repository.Tag;
-
-	if (tag.IsTag)
-	{
-		packageVersion = tag.Name;
-	}
-	else
-	{
-        var buildNumber = AppVeyor.Environment.Build.Number.ToString("00000");
-        var branch = AppVeyor.Environment.Repository.Branch;
-        var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-
-        if (branch == "main" && !isPullRequest)
-        {
-            packageVersion = DEFAULT_VERSION + "-dev-" + buildNumber;
-        }
-        else
-        {
-            var suffix = "-ci-" + buildNumber;
-
-            if (isPullRequest)
-                suffix += "-pr-" + AppVeyor.Environment.PullRequest.Number;
-            else if (AppVeyor.Environment.Repository.Branch.StartsWith("release", StringComparison.OrdinalIgnoreCase))
-                suffix += "-pre-" + buildNumber;
-            else
-                suffix += "-" + System.Text.RegularExpressions.Regex.Replace(branch, "[^0-9A-Za-z-]+", "-");
-
-            // Nuget limits "special version part" to 20 chars. Add one for the hyphen.
-            if (suffix.Length > 21)
-                suffix = suffix.Substring(0, 21);
-
-            packageVersion = DEFAULT_VERSION + suffix;
-        }
-	}
-
-	AppVeyor.UpdateBuildVersion(packageVersion);
-}
 
 //////////////////////////////////////////////////////////////////////
 // SETUP AND TEARDOWN
@@ -168,7 +114,7 @@ Task("BuildNuGetPackage")
         NuGetPack(new NuGetPackSettings()
         {
 			Id = NUGET_ID,
-			Version = nugetVersion ?? packageVersion,
+			Version = parameters.PackageVersion,
 			Title = TITLE,
 			Authors = AUTHORS,
 			Owners = OWNERS,
@@ -204,7 +150,7 @@ Task("BuildNuGetPackage")
 			new ChocolateyPackSettings()
 			{
 				Id = CHOCO_ID,
-				Version = chocoVersion ?? packageVersion,
+				Version = parameters.PackageVersion,
 				Title = TITLE,
 				Authors = AUTHORS,
 				Owners = OWNERS,

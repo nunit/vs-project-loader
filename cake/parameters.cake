@@ -1,5 +1,5 @@
 ﻿#load "./constants.cake"
-// #load "./versioning.cake"
+#load "./versioning.cake"
 // #load "./packaging.cake"
 // #load "./package-checks.cake"
 // #load "./package-tests.cake"
@@ -38,7 +38,7 @@ public class BuildParameters
 		ChocolateyApiKey = _context.EnvironmentVariable(CHOCO_API_KEY);
 		GitHubAccessToken = _context.EnvironmentVariable(GITHUB_ACCESS_TOKEN);
 
-		// BuildVersion = new BuildVersion(context, this);
+		BuildVersion = new BuildVersion(context, this);
 	}
 
 	public string Target { get; }
@@ -48,14 +48,13 @@ public class BuildParameters
 
 	public string Configuration { get; }
 
-	// public BuildVersion BuildVersion { get; }
-	// public string PackageVersion => BuildVersion.PackageVersion;
-	public string PackageVersion => DEFAULT_VERSION;
-	// public string AssemblyVersion => BuildVersion.AssemblyVersion;
-	// public string AssemblyFileVersion => BuildVersion.AssemblyFileVersion;
-	// public string AssemblyInformationalVersion => BuildVersion.AssemblyInformationalVersion;
+	public BuildVersion BuildVersion { get; }
+	public string PackageVersion => BuildVersion.PackageVersion;
+	public string AssemblyVersion => BuildVersion.AssemblyVersion;
+	public string AssemblyFileVersion => BuildVersion.AssemblyFileVersion;
+	public string AssemblyInformationalVersion => BuildVersion.AssemblyInformationalVersion;
 
-	// public int PackageTestLevel { get; }
+	public int PackageTestLevel { get; }
 
 	public bool IsLocalBuild => _buildSystem.IsLocalBuild;
 	public bool IsRunningOnUnix => _context.IsRunningOnUnix();
@@ -86,18 +85,18 @@ public class BuildParameters
 	public string ChocolateyApiKey { get; }
 	public string GitHubAccessToken { get; }
 
-	// public string BranchName => BuildVersion.BranchName;
-	// public bool IsReleaseBranch => BuildVersion.IsReleaseBranch;
+	public string BranchName => BuildVersion.BranchName;
+	public bool IsReleaseBranch => BuildVersion.IsReleaseBranch;
 
-	// public bool IsPreRelease => BuildVersion.IsPreRelease;
-	// public bool ShouldPublishToMyGet =>
-	// 	!IsPreRelease || LABELS_WE_PUBLISH_ON_MYGET.Contains(BuildVersion.PreReleaseLabel);
-	// public bool ShouldPublishToNuGet =>
-	// 	!IsPreRelease || LABELS_WE_PUBLISH_ON_NUGET.Contains(BuildVersion.PreReleaseLabel);
-	// public bool ShouldPublishToChocolatey =>
-	// 	!IsPreRelease || LABELS_WE_PUBLISH_ON_CHOCOLATEY.Contains(BuildVersion.PreReleaseLabel);
-	// public bool IsProductionRelease =>
-	// 	!IsPreRelease || LABELS_WE_RELEASE_ON_GITHUB.Contains(BuildVersion.PreReleaseLabel);
+	public bool IsPreRelease => BuildVersion.IsPreRelease;
+	public bool ShouldPublishToMyGet =>
+		!IsPreRelease || LABELS_WE_PUBLISH_ON_MYGET.Contains(BuildVersion.PreReleaseLabel);
+	public bool ShouldPublishToNuGet =>
+	 	!IsPreRelease || LABELS_WE_PUBLISH_ON_NUGET.Contains(BuildVersion.PreReleaseLabel);
+	public bool ShouldPublishToChocolatey =>
+	 	!IsPreRelease || LABELS_WE_PUBLISH_ON_CHOCOLATEY.Contains(BuildVersion.PreReleaseLabel);
+	public bool IsProductionRelease =>
+	 	!IsPreRelease || LABELS_WE_RELEASE_ON_GITHUB.Contains(BuildVersion.PreReleaseLabel);
 
 	public string GetPathToConsoleRunner(string version)
 	{
@@ -108,21 +107,21 @@ public class BuildParameters
 	{
 		var validationErrors = new List<string>();
 
-	// 	if (TasksToExecute.Contains("PublishPackages"))
-	// 	{
-	// 		if (ShouldPublishToMyGet && string.IsNullOrEmpty(MyGetApiKey))
-	// 			validationErrors.Add("MyGet ApiKey was not set.");
-	// 		if (ShouldPublishToNuGet && string.IsNullOrEmpty(NuGetApiKey))
-	// 			validationErrors.Add("NuGet ApiKey was not set.");
-	// 		if (ShouldPublishToChocolatey && string.IsNullOrEmpty(ChocolateyApiKey))
-	// 			validationErrors.Add("Chocolatey ApiKey was not set.");
-	// 	}
+		if (TasksToExecute.Contains("PublishPackages"))
+		{
+			if (ShouldPublishToMyGet && string.IsNullOrEmpty(MyGetApiKey))
+				validationErrors.Add("MyGet ApiKey was not set.");
+			if (ShouldPublishToNuGet && string.IsNullOrEmpty(NuGetApiKey))
+				validationErrors.Add("NuGet ApiKey was not set.");
+			if (ShouldPublishToChocolatey && string.IsNullOrEmpty(ChocolateyApiKey))
+				validationErrors.Add("Chocolatey ApiKey was not set.");
+		}
 
-	// 	if (TasksToExecute.Contains("CreateDraftRelease") && (IsReleaseBranch || IsProductionRelease))
-	// 	{
-	// 		if (string.IsNullOrEmpty(GitHubAccessToken))
-	// 			validationErrors.Add("GitHub Access Token was not set.");
-	// 	}
+		if (TasksToExecute.Contains("CreateDraftRelease") && (IsReleaseBranch || IsProductionRelease))
+		{
+			if (string.IsNullOrEmpty(GitHubAccessToken))
+				validationErrors.Add("GitHub Access Token was not set.");
+		}
 
 		if (validationErrors.Count > 0)
 	 	{
@@ -150,18 +149,18 @@ public class BuildParameters
 
 	 	Console.WriteLine("\nVERSIONING");
 	 	Console.WriteLine("PackageVersion:               " + PackageVersion);
-	// 	Console.WriteLine("AssemblyVersion:              " + AssemblyVersion);
-	// 	Console.WriteLine("AssemblyFileVersion:          " + AssemblyFileVersion);
-	// 	Console.WriteLine("AssemblyInformationalVersion: " + AssemblyInformationalVersion);
-	// 	Console.WriteLine("SemVer:                       " + BuildVersion.SemVer);
-	// 	Console.WriteLine("IsPreRelease:                 " + BuildVersion.IsPreRelease);
-	// 	Console.WriteLine("PreReleaseLabel:              " + BuildVersion.PreReleaseLabel);
-	// 	Console.WriteLine("PreReleaseSuffix:             " + BuildVersion.PreReleaseSuffix);
+	 	Console.WriteLine("AssemblyVersion:              " + AssemblyVersion);
+	 	Console.WriteLine("AssemblyFileVersion:          " + AssemblyFileVersion);
+	 	Console.WriteLine("AssemblyInformationalVersion: " + AssemblyInformationalVersion);
+	 	Console.WriteLine("SemVer:                       " + BuildVersion.SemVer);
+	 	Console.WriteLine("IsPreRelease:                 " + BuildVersion.IsPreRelease);
+	 	Console.WriteLine("PreReleaseLabel:              " + BuildVersion.PreReleaseLabel);
+	 	Console.WriteLine("PreReleaseSuffix:             " + BuildVersion.PreReleaseSuffix);
 
 	 	Console.WriteLine("\nDIRECTORIES");
 	 	Console.WriteLine("Project:   " + ProjectDirectory);
 	 	Console.WriteLine("Output:    " + OutputDirectory);
-	 	//Console.WriteLine("Source:    " + SourceDirectory);
+		//Console.WriteLine("Source:    " + SourceDirectory);
 	 	//Console.WriteLine("NuGet:     " + NuGetDirectory);
 	 	//Console.WriteLine("Choco:     " + ChocoDirectory);
 	 	Console.WriteLine("Package:   " + PackageDirectory);
@@ -182,14 +181,14 @@ public class BuildParameters
 	 	Console.WriteLine("NuGetApiKey:               " + (!string.IsNullOrEmpty(NuGetApiKey) ? "AVAILABLE" : "NOT AVAILABLE"));
 	 	Console.WriteLine("ChocolateyApiKey:          " + (!string.IsNullOrEmpty(ChocolateyApiKey) ? "AVAILABLE" : "NOT AVAILABLE"));
 
-	// 	Console.WriteLine("\nPUBLISHING");
-	// 	Console.WriteLine("ShouldPublishToMyGet:      " + ShouldPublishToMyGet);
-	// 	Console.WriteLine("ShouldPublishToNuGet:      " + ShouldPublishToNuGet);
-	// 	Console.WriteLine("ShouldPublishToChocolatey: " + ShouldPublishToChocolatey);
+	 	Console.WriteLine("\nPUBLISHING");
+	 	Console.WriteLine("ShouldPublishToMyGet:      " + ShouldPublishToMyGet);
+	 	Console.WriteLine("ShouldPublishToNuGet:      " + ShouldPublishToNuGet);
+	 	Console.WriteLine("ShouldPublishToChocolatey: " + ShouldPublishToChocolatey);
 
-	// 	Console.WriteLine("\nRELEASING");
-	// 	Console.WriteLine("BranchName:                   " + BranchName);
-	// 	Console.WriteLine("IsReleaseBranch:              " + IsReleaseBranch);
-	// 	Console.WriteLine("IsProductionRelease:          " + IsProductionRelease);
+	 	Console.WriteLine("\nRELEASING");
+	 	Console.WriteLine("BranchName:                   " + BranchName);
+	 	Console.WriteLine("IsReleaseBranch:              " + IsReleaseBranch);
+	 	Console.WriteLine("IsProductionRelease:          " + IsProductionRelease);
 	}
 }

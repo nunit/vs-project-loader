@@ -59,7 +59,6 @@ var MAILING_LIST_URL = new Uri("https://groups.google.com/forum/#!forum/nunit-di
 
 // Directories
 var PROJECT_DIR = Context.Environment.WorkingDirectory.FullPath + "/";
-var BIN_DIR = PROJECT_DIR + "bin/" + configuration + "/";
 var OUTPUT_DIR = PROJECT_DIR + "output/";
 
 // Package sources for nuget restore
