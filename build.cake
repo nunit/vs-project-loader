@@ -110,74 +110,15 @@ Task("BuildNuGetPackage")
 	.Does<BuildParameters>((parameters) => 
 	{
 		CreateDirectory(parameters.PackageDirectory);
-
-        NuGetPack(new NuGetPackSettings()
-        {
-			Id = NUGET_ID,
-			Version = parameters.PackageVersion,
-			Title = TITLE,
-			Authors = AUTHORS,
-			Owners = OWNERS,
-			Description = DESCRIPTION,
-			Summary = SUMMARY,
-			ProjectUrl = PROJECT_URL,
-			IconUrl = ICON_URL,
-			LicenseUrl = LICENSE_URL,
-			RequireLicenseAcceptance = false,
-			Copyright = COPYRIGHT,
-			ReleaseNotes = RELEASE_NOTES,
-			Tags = TAGS,
-			//Language = "en-US",
-			OutputDirectory = parameters.PackageDirectory,
-			Repository = new NuGetRepository {
-				Type = "git",
-				Url = GITHUB_SITE
-			},
-			Files = new [] {
-				new NuSpecContent { Source = parameters.ProjectDirectory + "LICENSE.txt" },
-				new NuSpecContent { Source = parameters.ProjectDirectory + "CHANGES.txt" },
-				new NuSpecContent { Source = parameters.OutputDirectory + "vs-project-loader.dll", Target = "tools" }
-			}
-        });
+		BuildNuGetPackage(parameters);
 	});
 
-	Task("BuildChocolateyPackage")
-		.Does<BuildParameters>((parameters) =>
-		{
+Task("BuildChocolateyPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
 		CreateDirectory(parameters.PackageDirectory);
-
-		ChocolateyPack(
-			new ChocolateyPackSettings()
-			{
-				Id = CHOCO_ID,
-				Version = parameters.PackageVersion,
-				Title = TITLE,
-				Authors = AUTHORS,
-				Owners = OWNERS,
-				Description = DESCRIPTION,
-				Summary = SUMMARY,
-				ProjectUrl = PROJECT_URL,
-				IconUrl = ICON_URL,
-				LicenseUrl = LICENSE_URL,
-				RequireLicenseAcceptance = false,
-				Copyright = COPYRIGHT,
-		    	ProjectSourceUrl = PROJECT_SOURCE_URL,
-    			DocsUrl= DOCS_URL,
-    			BugTrackerUrl = BUG_TRACKER_URL,
-    			PackageSourceUrl = PACKAGE_SOURCE_URL,
-    			MailingListUrl = MAILING_LIST_URL,
-				ReleaseNotes = RELEASE_NOTES,
-				Tags = TAGS,
-				//Language = "en-US",
-				OutputDirectory = parameters.PackageDirectory,
-				Files = new [] {
-					new ChocolateyNuSpecContent { Source = parameters.ProjectDirectory + "LICENSE.txt", Target = "tools" },
-					new ChocolateyNuSpecContent { Source = parameters.ProjectDirectory + "CHANGES.txt", Target = "tools" },
-					new ChocolateyNuSpecContent { Source = parameters.ProjectDirectory + "VERIFICATION.txt", Target = "tools" },
-					new ChocolateyNuSpecContent { Source = parameters.OutputDirectory + "vs-project-loader.dll", Target = "tools" }
-				}
-			});
-		});
+		BuildChocolateyPackage(parameters);
+	});
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS

@@ -40,22 +40,6 @@ private static readonly string[] LABELS_WE_PUBLISH_ON_CHOCOLATEY = { "alpha", "b
 private static readonly string[] LABELS_WE_RELEASE_ON_GITHUB = { "alpha", "beta", "rc" };
 
 // Metadata used in the nuget and chocolatey packages
-var TITLE = "NUnit 3 - Visual Studio Project Loader Extension";
-var AUTHORS = new [] { "Charlie Poole" };
-var OWNERS = new [] { "Charlie Poole" };
-var DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
-var SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
-var COPYRIGHT = "Copyright (c) 2018 Charlie Poole";
-var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/main/CHANGES.txt" };
-var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
-var PROJECT_URL = new Uri("http://nunit.org");
-var ICON_URL = new Uri("https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png");
-var LICENSE_URL = new Uri("http://nunit.org/nuget/nunit3-license.txt");
-var PROJECT_SOURCE_URL = new Uri( GITHUB_SITE );
-var PACKAGE_SOURCE_URL = new Uri( GITHUB_SITE );
-var BUG_TRACKER_URL = new Uri(GITHUB_SITE + "/issues");
-var DOCS_URL = new Uri(WIKI_PAGE);
-var MAILING_LIST_URL = new Uri("https://groups.google.com/forum/#!forum/nunit-discuss");
 
 // Directories
 var PROJECT_DIR = Context.Environment.WorkingDirectory.FullPath + "/";
