@@ -113,11 +113,51 @@ Task("BuildNuGetPackage")
 		BuildNuGetPackage(parameters);
 	});
 
+Task("InstallNuGetPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
+	});
+
+Task("VerifyNuGetPackage")
+	.IsDependentOn("InstallNuGetPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
+	});
+
+Task("TestNuGetPackage")
+	.IsDependentOn("InstallNuGetPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
+	});
+
 Task("BuildChocolateyPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
 		CreateDirectory(parameters.PackageDirectory);
 		BuildChocolateyPackage(parameters);
+	});
+
+Task("InstallChocolateyPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
+	});
+
+Task("VerifyChocolateyPackage")
+	.IsDependentOn("InstallChocolateyPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
+	});
+
+Task("TestChocolateyPackage")
+	.IsDependentOn("InstallChocolateyPackage")
+	.Does<BuildParameters>((parameters) =>
+	{
+
 	});
 
 //////////////////////////////////////////////////////////////////////
@@ -126,11 +166,18 @@ Task("BuildChocolateyPackage")
 
 Task("Package")
 	.IsDependentOn("Build")
-	.IsDependentOn("BuildPackages");
+	.IsDependentOn("PackageNuGet")
+	.IsDependentOn("PackageChocolatey");
 
-Task("BuildPackages")
+Task("PackageNuGet")
 	.IsDependentOn("BuildNuGetPackage")
-	.IsDependentOn("BuildChocolateyPackage");
+	.IsDependentOn("VerifyNuGetPackage")
+	.IsDependentOn("TestNuGetPackage");
+
+Task("PackageChocolatey")
+	.IsDependentOn("BuildChocolateyPackage")
+	.IsDependentOn("VerifyChocolateyPackage")
+	.IsDependentOn("TestChocolateyPackage");
 
 Task("Full")
 	.IsDependentOn("Clean")
