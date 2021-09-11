@@ -130,7 +130,10 @@ Task("VerifyNuGetPackage")
 	.IsDependentOn("InstallNuGetPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-
+		Check.That(parameters.NuGetInstallDirectory,
+			HasFiles("CHANGES.txt", "LICENSE.txt"),
+			HasDirectory("tools").WithFile("vs-project-loader.dll"));
+		Information("Verification was successful!");
 	});
 
 Task("TestNuGetPackage")
@@ -164,7 +167,10 @@ Task("VerifyChocolateyPackage")
 	.IsDependentOn("InstallChocolateyPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-
+		Check.That(parameters.ChocolateyInstallDirectory,
+			HasDirectory("tools").WithFiles(
+				"CHANGES.txt", "LICENSE.txt", "VERIFICATION.txt", "vs-project-loader.dll"));
+		Information("Verification was successful!");
 	});
 
 Task("TestChocolateyPackage")
