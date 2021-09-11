@@ -140,7 +140,7 @@ Task("TestNuGetPackage")
 	.IsDependentOn("InstallNuGetPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-
+		new NuGetPackageTester(parameters).RunPackageTests();
 	});
 
 Task("BuildChocolateyPackage")
@@ -177,7 +177,7 @@ Task("TestChocolateyPackage")
 	.IsDependentOn("InstallChocolateyPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-
+		new ChocolateyPackageTester(parameters).RunPackageTests();
 	});
 
 //////////////////////////////////////////////////////////////////////
