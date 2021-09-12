@@ -15,6 +15,9 @@
     <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="resources\net20-with-output-path-no-target-framework.csproj" />
+    <EmbeddedResource Include="resources\net20-with-output-path.csproj" />
+    <EmbeddedResource Include="resources\net20-with-assembly-name.csproj" />
     <EmbeddedResource Include="resources\cpp-default-library.vcproj" />
     <EmbeddedResource Include="resources\cpp-sample.vcproj" />
     <EmbeddedResource Include="resources\fsharp-sample.fsproj" />
@@ -24,6 +27,7 @@
     <EmbeddedResource Include="resources\legacy-cpp-sample.vcproj" />
     <EmbeddedResource Include="resources\legacy-cpp-unmanaged.vcproj" />
     <EmbeddedResource Include="resources\legacy-jsharp-sample.vjsproj" />
+    <EmbeddedResource Include="resources\net20-minimal.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\extension\vs-project-loader.csproj" />

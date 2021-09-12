@@ -203,7 +203,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     case ".csproj":
                         // We try legacy project first, then new format for .NET Core projects
                         if (!TryLoadLegacyProject())
-                            if (!TryLoadDotNetCoreProject())
+                            if (!TryLoadSdkProject())
                                 LoadMSBuildProject();
                         break;
 
@@ -238,11 +238,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
         }
 
         /// <summary>
-        /// Load a project in the new project format for .NET Core 1.0/1.1. Note that this method
+        /// Load a project in the SDK project format. Note that this method
         /// is only called for file extensions .csproj.
         /// </summary>
         /// <returns>True if the project was successfully loaded, false otherwise.</returns>
-        private bool TryLoadDotNetCoreProject()
+        private bool TryLoadSdkProject()
         {
             XmlNode root = _doc.SelectSingleNode("Project");
 
@@ -251,7 +251,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
 
                 XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
-                
+
                 // Even console apps are dll's even if <OutputType> has value 'EXE',
                 // if TargetFramework is netcore
                 string outputType = "dll";
@@ -279,6 +279,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 string assemblyName = assemblyNameNode == null ? $"{Name}.{outputType}" : $"{assemblyNameNode.InnerText}.{outputType}";
 
+                var appendTargetFrameworkNode = _doc.SelectSingleNode("Project/PropertyGroup/AppendTargetFrameworkToOutputPath");
+                bool appendTargetFramework = appendTargetFrameworkNode == null || appendTargetFrameworkNode.InnerText.ToLower() == "true";
+
                 XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
 
                 string commonOutputPath = null;
@@ -298,9 +301,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
                         continue;
                     }
 
-                    if (outputPath == null)
-                        outputPath = commonOutputPath;
-
                     if (outputPath != null)
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                 }
@@ -314,13 +314,21 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     if (!_configs.ContainsKey("Debug"))
                     {
                         string configName = "Debug";
-                        string outputPath = $@"bin\{configName}\{targetFramework}";
+                        string outputPath = commonOutputPath != null
+                            ? commonOutputPath.Replace("$(Configuration)", configName)
+                            : $@"bin\{configName}";
+                        if (appendTargetFramework)
+                            outputPath += "/" + targetFramework;
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                     }
                     if (!_configs.ContainsKey("Release"))
                     {
                         string configName = "Release";
-                        string outputPath = $@"bin\{configName}\{targetFramework}";
+                        string outputPath = commonOutputPath != null
+                            ? commonOutputPath.Replace("$(Configuration)", configName)
+                            : $@"bin\{configName}";
+                        if (appendTargetFramework)
+                            outputPath += "/" + targetFramework;
                         _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                     }
                 }

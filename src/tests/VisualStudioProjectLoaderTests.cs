@@ -121,6 +121,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TestCase("legacy-cpp-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-cpp-library-with-macros")]
         [TestCase("legacy-cpp-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
         [TestCase("netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "netcoreapp1.1-minimal")]
+        [TestCase("net20-minimal.csproj", new string[] { "Debug", "Release" }, "net20-minimal")]
+        [TestCase("net20-with-assembly-name.csproj", new string[] { "Debug", "Release" }, "the-assembly-name")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
             Assert.That(_loader.CanLoadFrom(resourceName));
@@ -148,6 +150,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TestCase("netcoreapp1.1-minimal.csproj", "Release", @"bin/Release/netcoreapp1.1")]
         [TestCase("netcoreapp1.1-with-output-path.csproj", "Debug", @"bin/Debug/netcoreapp1.1")]
         [TestCase("netcoreapp1.1-with-output-path.csproj", "Release", @"bin/Release/special")]
+        [TestCase("net20-with-output-path.csproj", "Release", @"bin/Release/net20")]
+        [TestCase("net20-with-output-path-no-target-framework.csproj", "Release", @"bin/Release")]
         public void PicksUpCorrectOutputPath(string resourceName, string configuration, string expectedOutputPath)
         {
             using (TestResource file = new TestResource(resourceName))
@@ -157,6 +161,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 var package = project.GetTestPackage(configuration);
                 // adjust for difference between Linux/Win:
                 var basePath = package.Settings["BasePath"].ToString().Replace('\\', '/');
+                Console.WriteLine("BasePath: " + basePath);
                 Assert.That(basePath.EndsWith(expectedOutputPath));
             }
         }
