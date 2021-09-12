@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net20</TargetFramework>
+    <AssemblyName>the-assembly-name</AssemblyName>
+  </PropertyGroup>
+
+</Project>
