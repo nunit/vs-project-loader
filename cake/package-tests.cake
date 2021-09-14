@@ -27,26 +27,6 @@ public abstract class PackageTester
     {
 		_parameters = parameters;
 		_context = parameters.Context;
-
-        // TODO: Re-enable when issue #38 and general support of the 
-        // new SDK format are complete.
-
-        PackageTests.Add(new PackageTest()
-        {
-            Description = "Re-run unit tests using csproj file",
-            Arguments = $"src/tests/vs-project-loader.tests.csproj --config={_parameters.Configuration}",
-            TestConsoleVersions = new string[] { "3.7.0" },
-            ExpectedResult = new ExpectedResult("Passed")
-            {
-                Total = 69,
-                Passed = 69,
-                Failed = 0,
-                Warnings = 0,
-                Inconclusive = 0,
-                Skipped = 0,
-                Assemblies = new[] { new ExpectedAssemblyResult("vs-project-loader.tests.dll", "net-2.0") }
-            }
-        });
     }
 
 	protected abstract string PackageName { get; }
@@ -56,9 +36,9 @@ public abstract class PackageTester
 	public PackageCheck[] PackageChecks { get; set; }
 	public List<PackageTest> PackageTests = new List<PackageTest>();
 
-	public void RunPackageTests()
+	public void RunPackageTests(IList<PackageTest> packageTests)
     {
-		if (PackageTests.Count == 0)
+		if (packageTests.Count == 0)
 		{
 			Console.WriteLine("No package tests were found.");
 			return;
@@ -66,7 +46,7 @@ public abstract class PackageTester
 
 		var reporter = new ResultReporter(PackageName);
 
-		foreach (var packageTest in PackageTests)
+		foreach (var packageTest in packageTests)
 		{
 			var resultFile = _parameters.ProjectDirectory + DEFAULT_TEST_RESULT_FILE;
 

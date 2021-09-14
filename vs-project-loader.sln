@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vs-project-loader", "src\extension\vs-project-loader.csproj", "{96181317-7B6F-49F0-B283-6E804D41C8AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vs-project-loader", "src\extension\vs-project-loader.csproj", "{96181317-7B6F-49F0-B283-6E804D41C8AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6217E5FA-D329-4278-9307-7FCF8F48E9F1}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,10 +11,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake
+		GitVersion.yml = GitVersion.yml
 		vs-project-loader.nuspec = vs-project-loader.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vs-project-loader.tests", "src\tests\vs-project-loader.tests.csproj", "{EA3CB73C-BD18-4274-943E-67CF1DAE8B9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vs-project-loader.tests", "src\tests\vs-project-loader.tests.csproj", "{EA3CB73C-BD18-4274-943E-67CF1DAE8B9E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cake", "cake", "{414B3A08-96E4-47AF-A365-885A95965B74}"
+	ProjectSection(SolutionItems) = preProject
+		cake\package-checks.cake = cake\package-checks.cake
+		cake\package-tests.cake = cake\package-tests.cake
+		cake\packaging.cake = cake\packaging.cake
+		cake\parameters.cake = cake\parameters.cake
+		cake\test-reports.cake = cake\test-reports.cake
+		cake\test-results.cake = cake\test-results.cake
+		cake\utilities.cake = cake\utilities.cake
+		cake\versioning.cake = cake\versioning.cake
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,5 +46,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{414B3A08-96E4-47AF-A365-885A95965B74} = {6217E5FA-D329-4278-9307-7FCF8F48E9F1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7BE0373-D02D-4745-8436-5830D9A14ECB}
 	EndGlobalSection
 EndGlobal

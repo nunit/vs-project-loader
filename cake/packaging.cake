@@ -2,22 +2,24 @@
 // PACKAGE METADATA
 //////////////////////////////////////////////////////////////////////
 
-var TITLE = "NUnit 3 - Visual Studio Project Loader Extension";
-var AUTHORS = new [] { "Charlie Poole" };
-var OWNERS = new [] { "Charlie Poole" };
-var DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
-var SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
-var COPYRIGHT = "Copyright (c) 2018 Charlie Poole";
-var RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/main/CHANGES.txt" };
-var TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
-var PROJECT_URL = new Uri("http://nunit.org");
-var ICON_URL = new Uri("https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png");
-var LICENSE_URL = new Uri("http://nunit.org/nuget/nunit3-license.txt");
-var PROJECT_SOURCE_URL = new Uri( GITHUB_SITE );
-var PACKAGE_SOURCE_URL = new Uri( GITHUB_SITE );
-var BUG_TRACKER_URL = new Uri(GITHUB_SITE + "/issues");
-var DOCS_URL = new Uri(WIKI_PAGE);
-var MAILING_LIST_URL = new Uri("https://groups.google.com/forum/#!forum/nunit-discuss");
+const string TITLE = "NUnit 3 - Visual Studio Project Loader Extension";
+static readonly string[] AUTHORS = new [] { "Charlie Poole" };
+static readonly string[] OWNERS = new [] { "Charlie Poole" };
+const string DESCRIPTION = "This extension allows NUnit to recognize and load solutions and projects in Visual Studio format. It supports files of type .sln, .csproj, .vbproj, .vjsproj, .vcproj and .fsproj.";
+const string SUMMARY = "NUnit Engine extension for loading Visual Studio formatted projects.";
+const string COPYRIGHT = "Copyright (c) 2018 Charlie Poole";
+static readonly string[] RELEASE_NOTES = new [] { "See https://raw.githubusercontent.com/nunit/vs-project-loader/main/CHANGES.txt" };
+static readonly string[] TAGS = new [] { "nunit", "test", "testing", "tdd", "runner" };
+static readonly Uri PROJECT_URL = new Uri("http://nunit.org");
+static readonly Uri ICON_URL = new Uri("https://cdn.rawgit.com/nunit/resources/master/images/icon/nunit_256.png");
+static readonly Uri LICENSE_URL = new Uri("http://nunit.org/nuget/nunit3-license.txt");
+const string GITHUB_SITE = "https://github.com/nunit/vs-project-loader";
+const string WIKI_PAGE = "https://github.com/nunit/docs/wiki/Console-Command-Line";
+static readonly Uri PROJECT_SOURCE_URL = new Uri( GITHUB_SITE );
+static readonly Uri PACKAGE_SOURCE_URL = new Uri( GITHUB_SITE );
+static readonly Uri BUG_TRACKER_URL = new Uri(GITHUB_SITE + "/issues");
+static readonly Uri DOCS_URL = new Uri(WIKI_PAGE);
+static readonly Uri MAILING_LIST_URL = new Uri("https://groups.google.com/forum/#!forum/nunit-discuss");
 
 //////////////////////////////////////////////////////////////////////
 // BUILD NUGET PACKAGE
@@ -91,23 +93,4 @@ public void BuildChocolateyPackage(BuildParameters parameters)
 			new ChocolateyNuSpecContent { Source = parameters.OutputDirectory + "vs-project-loader.dll", Target = "tools" }
 		}
 	});
-}
-
-private void PushNuGetPackage(FilePath package, string apiKey, string url)
-{
-	CheckPackageExists(package);
-	NuGetPush(package, new NuGetPushSettings() { ApiKey = apiKey, Source = url });
-}
-
-private void PushChocolateyPackage(FilePath package, string apiKey, string url)
-{
-	CheckPackageExists(package);
-	ChocolateyPush(package, new ChocolateyPushSettings() { ApiKey = apiKey, Source = url });
-}
-
-private void CheckPackageExists(FilePath package)
-{
-	if (!FileExists(package))
-		throw new InvalidOperationException(
-			$"Package not found: {package.GetFilename()}.\nCode may have changed since package was last built.");
 }
