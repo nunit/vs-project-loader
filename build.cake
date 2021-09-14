@@ -2,9 +2,16 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
 
 //////////////////////////////////////////////////////////////////////
-// PROJECT-SPECIFIC
+// PROJECT-SPECIFIC CONSTANTS
 //////////////////////////////////////////////////////////////////////
 
+const string SOLUTION_FILE = "vs-project-loader.sln";
+const string NUGET_ID = "NUnit.Extension.VSProjectLoader";
+const string CHOCO_ID = "nunit-extension-vs-project-loader";
+const string DEFAULT_VERSION = "3.9.0";
+const string DEFAULT_CONFIGURATION = "Release";
+
+// Load scripts after defining constants
 #load "cake/parameters.cake"
 
 //////////////////////////////////////////////////////////////////////
@@ -12,6 +19,10 @@
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
+
+// Additional arguments defined in the cake scripts:
+//   --configuration
+//   --version
 
 //////////////////////////////////////////////////////////////////////
 // SETUP AND TEARDOWN
@@ -59,8 +70,12 @@ Task("NuGetRestore")
 {
     NuGetRestore(SOLUTION_FILE, new NuGetRestoreSettings()
 	{
-		Source = PACKAGE_SOURCE
-	});
+		Source = new string[]
+        {
+            "https://www.nuget.org/api/v2",
+            "https://www.myget.org/F/nunit/api/v2"
+        }
+    });
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -99,7 +114,7 @@ Task("Test")
 	.IsDependentOn("Build")
 	.Does<BuildParameters>((parameters) =>
 	{
-		NUnit3(parameters.OutputDirectory + UNIT_TEST_ASSEMBLY);
+		NUnit3(parameters.OutputDirectory + "vs-project-loader.tests.dll");
 	});
 
 //////////////////////////////////////////////////////////////////////
@@ -131,10 +146,10 @@ Task("VerifyNuGetPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
 		Check.That(parameters.NuGetInstallDirectory,
-			HasFiles("CHANGES.txt", "LICENSE.txt"),
-			HasDirectory("tools").WithFile("vs-project-loader.dll"));
-		Information("Verification was successful!");
-	});
+            HasFiles("CHANGES.txt", "LICENSE.txt"),
+            HasDirectory("tools").WithFile("vs-project-loader.dll"));
+        Information("Verification was successful!");
+    });
 
 Task("TestNuGetPackage")
 	.IsDependentOn("InstallNuGetPackage")
