@@ -155,7 +155,7 @@ Task("TestNuGetPackage")
 	.IsDependentOn("InstallNuGetPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-		new NuGetPackageTester(parameters).RunPackageTests();
+		new NuGetPackageTester(parameters).RunPackageTests(GetPackageTests(parameters));
 	});
 
 Task("BuildChocolateyPackage")
@@ -192,8 +192,40 @@ Task("TestChocolateyPackage")
 	.IsDependentOn("InstallChocolateyPackage")
 	.Does<BuildParameters>((parameters) =>
 	{
-		new ChocolateyPackageTester(parameters).RunPackageTests();
+		new ChocolateyPackageTester(parameters).RunPackageTests(GetPackageTests(parameters));
 	});
+
+
+//////////////////////////////////////////////////////////////////////
+// GET PACKAGE TESTS
+//////////////////////////////////////////////////////////////////////
+
+// Helper method to return the package tests. We use a method rather
+// than a fixed array or list because the configuration must be supplied
+// from the build parameters.
+
+PackageTest[] GetPackageTests(BuildParameters parameters)
+{
+    return new PackageTest[]
+    {
+        new PackageTest()
+        {
+            Description = "Re-run unit tests using csproj file",
+            Arguments = $"src/tests/vs-project-loader.tests.csproj --config={parameters.Configuration}",
+            TestConsoleVersions = new string[] { "3.7.0" },
+            ExpectedResult = new ExpectedResult("Passed")
+            {
+                Total = 69,
+                Passed = 69,
+                Failed = 0,
+                Warnings = 0,
+                Inconclusive = 0,
+                Skipped = 0,
+                Assemblies = new[] { new ExpectedAssemblyResult("vs-project-loader.tests.dll", "net-2.0") }
+            }
+        }
+    };
+}
 
 //////////////////////////////////////////////////////////////////////
 // PUBLISH
