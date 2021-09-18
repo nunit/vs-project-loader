@@ -5,6 +5,7 @@
 #load "./test-results.cake"
 #load "./test-reports.cake"
 #load "./utilities.cake"
+#load "./local-targets.cake"
 
 using System;
 

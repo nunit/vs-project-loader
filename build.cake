@@ -1,4 +1,5 @@
 #tool nuget:?package=GitVersion.CommandLine&version=5.0.0
+#tool nuget:?package=GitReleaseManager&version=0.11.0
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
 
 //////////////////////////////////////////////////////////////////////
@@ -8,6 +9,8 @@
 const string SOLUTION_FILE = "vs-project-loader.sln";
 const string NUGET_ID = "NUnit.Extension.VSProjectLoader";
 const string CHOCO_ID = "nunit-extension-vs-project-loader";
+const string GITHUB_OWNER = "nunit";
+const string GITHUB_REPO = "vs-project-loader";
 const string DEFAULT_VERSION = "3.9.0";
 const string DEFAULT_CONFIGURATION = "Release";
 
@@ -22,7 +25,7 @@ var target = Argument("target", "Default");
 
 // Additional arguments defined in the cake scripts:
 //   --configuration
-//   --version
+//   --packageVersion
 
 //////////////////////////////////////////////////////////////////////
 // SETUP AND TEARDOWN
@@ -35,7 +38,7 @@ Setup<BuildParameters>((context) =>
 	if (BuildSystem.IsRunningOnAppVeyor)
 		AppVeyor.UpdateBuildVersion(parameters.PackageVersion + "-" + AppVeyor.Environment.Build.Number);
 
-	Information("Building {0} version {1} of NUnit Project Loader.", parameters.Configuration, parameters.PackageVersion);
+	Information("Building {0} version {1} of Visual Studio Project Loader.", parameters.Configuration, parameters.PackageVersion);
 
 	return parameters;
 });
@@ -301,6 +304,71 @@ Task("PublishToChocolatey")
 				hadPublishingErrors = true;
 			}
 	});
+
+//////////////////////////////////////////////////////////////////////
+// CREATE A DRAFT RELEASE
+//////////////////////////////////////////////////////////////////////
+
+Task("CreateDraftRelease")
+    .Does<BuildParameters>((parameters) =>
+    {
+        if (parameters.IsReleaseBranch)
+        {
+            // NOTE: Since this is a release branch, the pre-release label
+            // is "pre", which we don't want to use for the draft release.
+            // The branch name contains the full information to be used
+            // for both the name of the draft release and the milestone,
+            // i.e. release-2.0.0, release-2.0.0-beta2, etc.
+            string milestone = parameters.BranchName.Substring(8);
+            string releaseName = $"NUnit Project Loader Extension {milestone}";
+
+            Information($"Creating draft release...");
+
+            try
+            {
+                GitReleaseManagerCreate(parameters.GitHubAccessToken, GITHUB_OWNER, GITHUB_REPO, new GitReleaseManagerCreateSettings()
+                {
+                    Name = releaseName,
+                    Milestone = milestone
+                });
+            }
+            catch
+            {
+                Error($"Unable to create draft release for {releaseName}.");
+                Error($"Check that there is a {milestone} milestone with at least one closed issue.");
+                Error("");
+                throw;
+            }
+        }
+        else
+        {
+            Information("Skipping Release creation because this is not a release branch");
+        }
+    });
+
+//////////////////////////////////////////////////////////////////////
+// CREATE A PRODUCTION RELEASE
+//////////////////////////////////////////////////////////////////////
+
+Task("CreateProductionRelease")
+    .Does<BuildParameters>((parameters) =>
+    {
+        if (parameters.IsProductionRelease)
+        {
+            string token = parameters.GitHubAccessToken;
+            string tagName = parameters.PackageVersion;
+            string assets = $"\"{parameters.NuGetPackage},{parameters.ChocolateyPackage}\"";
+
+            Information($"Publishing release {tagName} to GitHub");
+
+            GitReleaseManagerAddAssets(token, GITHUB_OWNER, GITHUB_REPO, tagName, assets);
+            GitReleaseManagerClose(token, GITHUB_OWNER, GITHUB_REPO, tagName);
+        }
+        else
+        {
+            Information("Skipping CreateProductionRelease because this is not a production release");
+        }
+    });
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
