@@ -15,6 +15,7 @@
     <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="resources\sdk-net20-minimal-with-target-frameworks.csproj" />
     <EmbeddedResource Include="resources\sdk-net20-with-output-path-no-target-framework.csproj" />
     <EmbeddedResource Include="resources\sdk-net20-with-output-path.csproj" />
     <EmbeddedResource Include="resources\sdk-net20-with-assembly-name.csproj" />

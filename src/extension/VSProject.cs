@@ -248,7 +248,14 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
             if (root != null && SafeAttributeValue(root, "Sdk") != null)
             {
-                string targetFramework = _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework").InnerText;
+                string[] targetFrameworks =
+                    _doc.SelectSingleNode("Project/PropertyGroup/TargetFrameworks")?.InnerText?.Split(new[] { ';' });
+
+                // TODO: Not currently handling multiple targets. That's a separate issue.
+                // This code only handles use of TargetFrameworks with a single value.
+                string targetFramework = targetFrameworks != null && targetFrameworks.Length > 0
+                    ? targetFrameworks[0]
+                    : _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework")?.InnerText;
 
                 XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
 

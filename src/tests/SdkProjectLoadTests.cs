@@ -34,6 +34,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     {
         [TestCase("sdk-netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-netcoreapp1.1-minimal")]
         [TestCase("sdk-net20-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-net20-minimal")]
+        [TestCase("sdk-net20-minimal-with-target-frameworks.csproj", new string[] { "Debug", "Release" }, "sdk-net20-minimal-with-target-frameworks")]
         [TestCase("sdk-net20-with-assembly-name.csproj", new string[] { "Debug", "Release" }, "the-assembly-name")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
