@@ -25,18 +25,24 @@ using System;
 
 namespace NUnit.Engine.Tests.resources
 {
+    // We use this derived class so that the resources
+    // may be found based on its namespace.
     public class TestResource : TempResourceFile
     {
         public TestResource(string name)
             : base(typeof(TestResource), name)
         {
+#if DEBUG
             Console.WriteLine("Created " + name);
+#endif
         }
 
         public TestResource(string name, string filePath)
             : base(typeof(TestResource), name, filePath)
         {
+#if DEBUG
             Console.WriteLine("Created " + name);
+#endif
         }
     }
 }

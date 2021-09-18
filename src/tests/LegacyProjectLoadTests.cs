@@ -21,13 +21,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
 using System.IO;
-using System.Linq;
 using NUnit.Engine.Extensibility;
 using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {

@@ -23,8 +23,6 @@
 
 using System;
 using System.IO;
-using System.Collections;
-using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests

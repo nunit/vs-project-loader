@@ -21,18 +21,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
 using System.IO;
-using System.Linq;
-using NUnit.Engine.Extensibility;
-using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
-    [TestFixture]
-    public class ProjectLoaderTests
+    public abstract class ProjectLoaderTests
     {
         protected readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
         protected VisualStudioProjectLoader _loader;
@@ -45,7 +40,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
 
         protected string NormalizePath(string path)
         {
-            return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
+            return PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }
