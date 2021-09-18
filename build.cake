@@ -1,6 +1,7 @@
 #tool nuget:?package=GitVersion.CommandLine&version=5.0.0
 #tool nuget:?package=GitReleaseManager&version=0.11.0
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.12.0
 
 //////////////////////////////////////////////////////////////////////
 // PROJECT-SPECIFIC CONSTANTS
@@ -215,7 +216,7 @@ PackageTest[] GetPackageTests(BuildParameters parameters)
         {
             Description = "Re-run unit tests using csproj file",
             Arguments = $"src/tests/vs-project-loader.tests.csproj --config={parameters.Configuration}",
-            TestConsoleVersions = new string[] { "3.7.0" },
+            TestConsoleVersions = new string[] { "3.7.0", "3.12.0" },
             ExpectedResult = new ExpectedResult("Passed")
             {
                 Total = 67,
