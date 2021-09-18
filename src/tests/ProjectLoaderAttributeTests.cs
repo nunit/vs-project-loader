@@ -1,5 +1,5 @@
-﻿// ***********************************************************************
-// Copyright (c) 2007-2014 Charlie Poole
+// ***********************************************************************
+// Copyright (c) 2008-2014 Charlie Poole
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -21,28 +21,35 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
+using NUnit.Engine.Extensibility;
+using NUnit.Framework;
 
-namespace NUnit.Engine.Tests.resources
+namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
-    // We use this derived class so that the resources
-    // may be found based on its namespace.
-    public class TestResource : TempResourceFile
+    [TestFixture]
+    public static class ProjectLoaderAttributeTests
     {
-        public TestResource(string name)
-            : base(typeof(TestResource), name)
+        [Test]
+        public static void CheckExtensionAttribute()
         {
-#if DEBUG
-            Console.WriteLine("Created " + name);
-#endif
+            Assert.That(typeof(VisualStudioProjectLoader),
+                Has.Attribute<ExtensionAttribute>());
         }
 
-        public TestResource(string name, string filePath)
-            : base(typeof(TestResource), name, filePath)
+        [TestCase(".sln")]
+        [TestCase(".csproj")]
+        [TestCase(".vbproj")]
+        [TestCase(".vjsproj")]
+        [TestCase(".vcproj")]
+        [TestCase(".fsproj")]
+        public static void CheckExtensionPropertyAttributes(string ext)
         {
-#if DEBUG
-            Console.WriteLine("Created " + name);
-#endif
+            var attrs = typeof(VisualStudioProjectLoader).GetCustomAttributes(typeof(ExtensionPropertyAttribute), false);
+
+            Assert.That(attrs,
+                Has.Exactly(1)
+                    .With.Property("Name").EqualTo("FileExtension")
+                    .And.Property("Value").EqualTo(ext));
         }
     }
 }

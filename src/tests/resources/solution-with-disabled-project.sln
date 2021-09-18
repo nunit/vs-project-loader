@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-sample", "csharp-sample\csharp-sample.csproj", "{45103FD8-4F1F-4B2D-9E75-20094E98EE64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nonsdk-csharp-sample", "csharp-sample\nonsdk-csharp-sample.csproj", "{45103FD8-4F1F-4B2D-9E75-20094E98EE64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-debug-only", "csharp-debug-only\csharp-debug-only.csproj", "{B9DB5E6C-8A54-40F9-9B1E-225B58FE7ED4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nonsdk-csharp-debug-only", "csharp-debug-only\nonsdk-csharp-debug-only.csproj", "{B9DB5E6C-8A54-40F9-9B1E-225B58FE7ED4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

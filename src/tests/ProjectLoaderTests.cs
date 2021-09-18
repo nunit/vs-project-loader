@@ -1,5 +1,5 @@
-﻿// ***********************************************************************
-// Copyright (c) 2007-2014 Charlie Poole
+// ***********************************************************************
+// Copyright (c) 2008-2014 Charlie Poole
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -21,28 +21,26 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
+using System.IO;
+using NUnit.Framework;
+using System.Text.RegularExpressions;
 
-namespace NUnit.Engine.Tests.resources
+namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
-    // We use this derived class so that the resources
-    // may be found based on its namespace.
-    public class TestResource : TempResourceFile
+    public abstract class ProjectLoaderTests
     {
-        public TestResource(string name)
-            : base(typeof(TestResource), name)
+        protected readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
+        protected VisualStudioProjectLoader _loader;
+
+        [SetUp]
+        public void CreateLoader()
         {
-#if DEBUG
-            Console.WriteLine("Created " + name);
-#endif
+            _loader = new VisualStudioProjectLoader();
         }
 
-        public TestResource(string name, string filePath)
-            : base(typeof(TestResource), name, filePath)
+        protected string NormalizePath(string path)
         {
-#if DEBUG
-            Console.WriteLine("Created " + name);
-#endif
+            return PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }
