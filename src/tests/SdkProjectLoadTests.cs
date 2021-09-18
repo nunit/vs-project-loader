@@ -32,17 +32,8 @@ using System.Text.RegularExpressions;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class SdkProjectLoadTests
+    public class SdkProjectLoadTests : ProjectLoaderTests
     {
-        private readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
-        private VisualStudioProjectLoader _loader;
-
-        [SetUp]
-        public void CreateLoader()
-        {
-            _loader = new VisualStudioProjectLoader();
-        }
-
         [TestCase("sdk-netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-netcoreapp1.1-minimal")]
         [TestCase("sdk-net20-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-net20-minimal")]
         [TestCase("sdk-net20-with-assembly-name.csproj", new string[] { "Debug", "Release" }, "the-assembly-name")]
@@ -114,11 +105,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     Assert.That(Path.GetFileName(package.SubPackages[0].FullName) == expectedAssemblyName);
                 }
             }
-        }
-
-        private string NormalizePath(string path)
-        {
-            return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }

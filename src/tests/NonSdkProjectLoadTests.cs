@@ -32,62 +32,8 @@ using System.Text.RegularExpressions;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class NonSdkProjectLoadTests
+    public class NonSdkProjectLoadTests : ProjectLoaderTests
     {
-        private readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
-        private VisualStudioProjectLoader _loader;
-
-        [SetUp]
-        public void CreateLoader()
-        {
-            _loader = new VisualStudioProjectLoader();
-        }
-
-        [TestCase("project.csproj", true)]
-        [TestCase("project.vbproj", true)]
-        [TestCase("project.vjsproj", true)]
-        [TestCase("project.fsproj", true)]
-        [TestCase("project.vcproj", true)]
-        [TestCase("project.sln", true)]
-        [TestCase("project.xyproj", false)]
-        public void ValidExtensions(string project, bool isGood)
-        {
-            if (isGood)
-                Assert.That(_loader.CanLoadFrom(project), "Should be loadable: {0}", project);
-            else
-                Assert.False(_loader.CanLoadFrom(project), "Should not be loadable: {0}", project);
-        }
-
-        [Test]
-        public static void CheckExtensionAttribute()
-        {
-            Assert.That(typeof(VisualStudioProjectLoader),
-                Has.Attribute<ExtensionAttribute>());
-        }
-
-        [TestCase(".sln")]
-        [TestCase(".csproj")]
-        [TestCase(".vbproj")]
-        [TestCase(".vjsproj")]
-        [TestCase(".vcproj")]
-        [TestCase(".fsproj")]
-        public static void CheckExtensionPropertyAttributes(string ext)
-        {
-            var attrs = typeof(VisualStudioProjectLoader).GetCustomAttributes(typeof(ExtensionPropertyAttribute), false);
-
-            Assert.That(attrs,
-                Has.Exactly(1)
-                    .With.Property("Name").EqualTo("FileExtension")
-                    .And.Property("Value").EqualTo(ext));
-        }
-
-        [Test]
-        public void CannotLoadWebProject()
-        {
-            Assert.IsFalse(_loader.CanLoadFrom(@"http://localhost/web.csproj"));
-            Assert.IsFalse(_loader.CanLoadFrom(@"\MyProject\http://localhost/web.csproj"));
-        }
-
         [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
         [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
         [TestCase("nonsdk-csharp-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
@@ -184,11 +130,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 Assert.That(secondDebugPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\Debug2ndTest\SecondTest\Test.exe")),
                     "Invalid Debug2ndTest assembly path");
             }
-        }
-
-        private string NormalizePath(string path)
-        {
-            return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }

@@ -32,17 +32,8 @@ using System.Text.RegularExpressions;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class LegacyProjectLoadTests
+    public class LegacyProjectLoadTests : ProjectLoaderTests
     {
-        private readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
-        private VisualStudioProjectLoader _loader;
-
-        [SetUp]
-        public void CreateLoader()
-        {
-            _loader = new VisualStudioProjectLoader();
-        }
-
         [TestCase("legacy-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
         [TestCase("legacy-csharp-hebrew-file-problem.csproj", new string[] { "Debug", "Release" }, "HebrewFileProblem")]
         [TestCase("legacy-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
@@ -71,11 +62,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
                 }
             }
-        }
-
-        private string NormalizePath(string path)
-        {
-            return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }

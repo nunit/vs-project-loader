@@ -32,11 +32,11 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class VSProjectTests
     {
-        private string invalidFile = Path.Combine(Path.GetTempPath(), "invalid.csproj");
+        private static readonly string INVALID_FILE = Path.Combine(Path.GetTempPath(), "invalid.csproj");
 
         private void WriteInvalidFile( string text )
         {
-            StreamWriter writer = new StreamWriter( invalidFile );
+            StreamWriter writer = new StreamWriter( INVALID_FILE );
             writer.WriteLine( text );
             writer.Close();
         }
@@ -44,15 +44,27 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TearDown]
         public void EraseInvalidFile()
         {
-            if ( File.Exists( invalidFile ) )
-                File.Delete( invalidFile );
+            if ( File.Exists( INVALID_FILE ) )
+                File.Delete( INVALID_FILE );
         }
 
-        [Test]
-        public void NotWebProject()
+        [TestCase("project.csproj", ExpectedResult = true)]
+        [TestCase("project.vbproj", ExpectedResult = true)]
+        [TestCase("project.vjsproj", ExpectedResult = true)]
+        [TestCase("project.fsproj", ExpectedResult = true)]
+        [TestCase("project.vcproj", ExpectedResult = true)]
+        [TestCase("project.sln", ExpectedResult = true)]
+        [TestCase("project.xyproj", ExpectedResult = false)]
+        [TestCase("http://localhost/web.csproj", ExpectedResult = false)]
+        [TestCase(@"\MyProject\http://localhost/web.csproj", ExpectedResult = false)]
+        public bool ValidExtensions(string project)
         {
-            Assert.IsFalse(VSProject.IsProjectFile(@"http://localhost/web.csproj"));
-            Assert.IsFalse(VSProject.IsProjectFile(@"\MyProject\http://localhost/web.csproj"));
+            return CanLoadFrom(project);
+        }
+
+        private static bool CanLoadFrom(string project)
+        {
+            return VSProject.IsProjectFile(project) || VSProject.IsSolutionFile(project);
         }
 
         [Test]

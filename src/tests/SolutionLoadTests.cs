@@ -32,17 +32,8 @@ using System.Text.RegularExpressions;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class SolutionLoadTests
+    public class SolutionLoadTests : ProjectLoaderTests
     {
-        private readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
-        private VisualStudioProjectLoader _loader;
-
-        [SetUp]
-        public void CreateLoader()
-        {
-            _loader = new VisualStudioProjectLoader();
-        }
-
         [Test]
         public void VS2003Solution()
         {
@@ -137,18 +128,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         public void SolutionWithProjectUsingPackageReference()
         {
             using (new TestResource("project-with-package-reference.csproj", NormalizePath(@"project-with-package-reference\project-with-package-reference.csproj")))
-            using(TestResource file = new TestResource("solution-with-package-reference.sln"))
+            using (TestResource file = new TestResource("solution-with-package-reference.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(2, project.ConfigNames.Count);
                 Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count, "Release should have 1 assemblies");
                 Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 1 assembly");
             }
-        }
-
-        private string NormalizePath(string path)
-        {
-            return this.PathSeparatorLookup.Replace(path, Path.DirectorySeparatorChar.ToString());
         }
     }
 }
