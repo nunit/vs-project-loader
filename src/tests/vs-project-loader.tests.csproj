@@ -15,32 +15,30 @@
     <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\net20-with-output-path-no-target-framework.csproj" />
-    <EmbeddedResource Include="resources\net20-with-output-path.csproj" />
-    <EmbeddedResource Include="resources\net20-with-assembly-name.csproj" />
-    <EmbeddedResource Include="resources\cpp-default-library.vcproj" />
-    <EmbeddedResource Include="resources\cpp-sample.vcproj" />
-    <EmbeddedResource Include="resources\fsharp-sample.fsproj" />
-    <EmbeddedResource Include="resources\jsharp-sample.vjsproj" />
+    <EmbeddedResource Include="resources\sdk-net20-with-output-path-no-target-framework.csproj" />
+    <EmbeddedResource Include="resources\sdk-net20-with-output-path.csproj" />
+    <EmbeddedResource Include="resources\sdk-net20-with-assembly-name.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-fsharp-sample.fsproj" />
+    <EmbeddedResource Include="resources\nonsdk-jsharp-sample.vjsproj" />
     <EmbeddedResource Include="resources\legacy-cpp-library-with-macros.vcproj" />
     <EmbeddedResource Include="resources\legacy-cpp-makefile-project.vcproj" />
     <EmbeddedResource Include="resources\legacy-cpp-sample.vcproj" />
     <EmbeddedResource Include="resources\legacy-cpp-unmanaged.vcproj" />
     <EmbeddedResource Include="resources\legacy-jsharp-sample.vjsproj" />
-    <EmbeddedResource Include="resources\net20-minimal.csproj" />
+    <EmbeddedResource Include="resources\sdk-net20-minimal.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\extension\vs-project-loader.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\csharp-debug-only-no-nunit.csproj" />
-    <EmbeddedResource Include="resources\csharp-debug-only.csproj" />
-    <EmbeddedResource Include="resources\csharp-missing-assembly-name.csproj" />
-    <EmbeddedResource Include="resources\csharp-missing-output-path.csproj" />
-    <EmbeddedResource Include="resources\csharp-missing-output-type.csproj" />
-    <EmbeddedResource Include="resources\csharp-sample.csproj" />
-    <EmbeddedResource Include="resources\csharp-sample_noplatform.csproj" />
-    <EmbeddedResource Include="resources\csharp-xna-project.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-debug-only-no-nunit.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-debug-only.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-missing-assembly-name.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-missing-output-path.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-missing-output-type.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-sample.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-sample_noplatform.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-xna-project.csproj" />
     <EmbeddedResource Include="resources\legacy-csharp-hebrew-file-problem.csproj" />
     <EmbeddedResource Include="resources\legacy-csharp-sample.csproj" />
     <EmbeddedResource Include="resources\legacy-samples.sln" />
@@ -48,21 +46,21 @@
     <EmbeddedResource Include="resources\MultiplePlatformProject.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\samples.sln" />
+    <EmbeddedResource Include="resources\solution-vs2005-samples.sln" />
     <EmbeddedResource Include="resources\solution-with-disabled-project.sln" />
     <EmbeddedResource Include="resources\solution-with-non-nunit-project.sln" />
     <EmbeddedResource Include="resources\solution-with-unmanaged-cpp.sln" />
     <EmbeddedResource Include="resources\solution-with-web-application.sln" />
-    <EmbeddedResource Include="resources\vb-sample.vbproj" />
+    <EmbeddedResource Include="resources\nonsdk-vb-sample.vbproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netcoreapp1.1-minimal.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp1.1-minimal.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netcoreapp1.1-with-output-path.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-output-path.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netcoreapp1.1-with-assembly-name.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-assembly-name.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\project-with-package-reference.csproj" />
@@ -72,22 +70,22 @@
     <EmbeddedResource Include="resources\TestTemplatedPaths.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-dll.csproj" />
-    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-exe.csproj" />
-    <EmbeddedResource Include="resources\netcoreapp2.0-with-assembly-name-exe.csproj" />
-    <EmbeddedResource Include="resources\netcorefmwk-minimal-exe.csproj" />
-    <EmbeddedResource Include="resources\netcorefmwk-with-assembly-name-dll.csproj" />
-    <EmbeddedResource Include="resources\netcorefmwk-with-assembly-name-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-dll.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp2.0-with-assembly-name-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-net461-minimal-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-dll.csproj" />
+    <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-exe.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netcoreapp2.0-minimal-web.csproj" />
-    <EmbeddedResource Include="resources\netcorefmwk-minimal-web.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-web.csproj" />
+    <EmbeddedResource Include="resources\sdk-net461-minimal-web.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netstd2.0-minimal-dll.csproj" />
+    <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-dll.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\netstd2.0-minimal-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-exe.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\test-duplicated-key-project.csproj" />

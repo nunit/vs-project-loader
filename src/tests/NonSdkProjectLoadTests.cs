@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class ProjectLoadTests
+    public class NonSdkProjectLoadTests
     {
         private readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
         private VisualStudioProjectLoader _loader;
@@ -88,25 +88,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             Assert.IsFalse(_loader.CanLoadFrom(@"\MyProject\http://localhost/web.csproj"));
         }
 
-        [TestCase("csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("csharp-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
-        [TestCase("csharp-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
-        [TestCase("vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("fsharp-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]
-        [TestCase("cpp-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
-        [TestCase("cpp-default-library.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-default-library")]
-        [TestCase("legacy-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("legacy-csharp-hebrew-file-problem.csproj", new string[] { "Debug", "Release" }, "HebrewFileProblem")]
-        [TestCase("legacy-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("legacy-jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("legacy-cpp-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
-        [TestCase("legacy-cpp-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-cpp-library-with-macros")]
-        [TestCase("legacy-cpp-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
-        [TestCase("netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "netcoreapp1.1-minimal")]
-        [TestCase("net20-minimal.csproj", new string[] { "Debug", "Release" }, "net20-minimal")]
-        [TestCase("net20-with-assembly-name.csproj", new string[] { "Debug", "Release" }, "the-assembly-name")]
+        [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
+        [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
+        [TestCase("nonsdk-csharp-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
+        [TestCase("nonsdk-csharp-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
+        [TestCase("nonsdk-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
+        [TestCase("nonsdk-jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
+        [TestCase("nonsdk-fsharp-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
             Assert.That(_loader.CanLoadFrom(resourceName));
@@ -130,55 +118,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
-        [TestCase("netcoreapp1.1-minimal.csproj", "Debug", @"bin/Debug/netcoreapp1.1")]
-        [TestCase("netcoreapp1.1-minimal.csproj", "Release", @"bin/Release/netcoreapp1.1")]
-        [TestCase("netcoreapp1.1-with-output-path.csproj", "Debug", @"bin/Debug/netcoreapp1.1")]
-        [TestCase("netcoreapp1.1-with-output-path.csproj", "Release", @"bin/Release/special")]
-        [TestCase("net20-with-output-path.csproj", "Release", @"bin/Release/net20")]
-        [TestCase("net20-with-output-path-no-target-framework.csproj", "Release", @"bin/Release")]
-        public void PicksUpCorrectOutputPath(string resourceName, string configuration, string expectedOutputPath)
-        {
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                var package = project.GetTestPackage(configuration);
-                // adjust for difference between Linux/Win:
-                var basePath = package.Settings["BasePath"].ToString().Replace('\\', '/');
-                Console.WriteLine("BasePath: " + basePath);
-                Assert.That(basePath.EndsWith(expectedOutputPath));
-            }
-        }
-
-        [TestCase("netcoreapp1.1-minimal.csproj", "netcoreapp1.1-minimal.dll")]
-        [TestCase("netcoreapp1.1-with-assembly-name.csproj", "the-assembly-name.dll")]
-        [TestCase("netcoreapp2.0-minimal-dll.csproj", "netcoreapp2.0-minimal-dll.dll")]
-        [TestCase("netcoreapp2.0-minimal-exe.csproj", "netcoreapp2.0-minimal-exe.dll")]
-        [TestCase("netcoreapp2.0-minimal-web.csproj", "netcoreapp2.0-minimal-web.dll")]
-        [TestCase("netcoreapp2.0-with-assembly-name-exe.csproj", "the-assembly-name.dll")]
-        [TestCase("netcorefmwk-minimal-exe.csproj", "netcorefmwk-minimal-exe.exe")]
-        [TestCase("netcorefmwk-minimal-web.csproj", "netcorefmwk-minimal-web.exe")]
-        [TestCase("netcorefmwk-with-assembly-name-dll.csproj", "the-assembly-name.dll")]
-        [TestCase("netcorefmwk-with-assembly-name-exe.csproj", "the-assembly-name.exe")]
-        [TestCase("netstd2.0-minimal-dll.csproj", "netstd2.0-minimal-dll.dll")]
-        [TestCase("netstd2.0-minimal-exe.csproj", "netstd2.0-minimal-exe.dll")]
-        public void PicksUpCorrectAssemblyName(string resourceName, string expectedAssemblyName)
-        {
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                foreach(var config in project.ConfigNames)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.That(Path.GetFileName(package.SubPackages[0].FullName) == expectedAssemblyName);
-                }
-            }
-        }
-
-        [TestCase("csharp-missing-assembly-name.csproj", "csharp-missing-assembly-name.exe")]
-        [TestCase("csharp-missing-output-type.csproj", "MissingOutputType.dll")]
+        [TestCase("nonsdk-csharp-missing-assembly-name.csproj", "nonsdk-csharp-missing-assembly-name.exe")]
+        [TestCase("nonsdk-csharp-missing-output-type.csproj", "MissingOutputType.dll")]
         public void PicksUpCorrectMsBuildProperty(string resourceName, string expectedOutputFilename)
         {
             using (TestResource file = new TestResource(resourceName))

@@ -63,11 +63,11 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void VS2005Solution()
         {
-            using (new TestResource("csharp-sample.csproj", NormalizePath(@"csharp\csharp-sample.csproj")))
-            using (new TestResource("jsharp-sample.vjsproj", NormalizePath(@"jsharp\jsharp-sample.vjsproj")))
-            using (new TestResource("vb-sample.vbproj", NormalizePath(@"vb\vb-sample.vbproj")))
-            using (new TestResource("cpp-sample.vcproj", NormalizePath(@"cpp-sample\cpp-sample.vcproj")))
-            using (TestResource file = new TestResource("samples.sln"))
+            using (new TestResource("nonsdk-csharp-sample.csproj", NormalizePath(@"csharp\nonsdk-csharp-sample.csproj")))
+            using (new TestResource("nonsdk-jsharp-sample.vjsproj", NormalizePath(@"jsharp\nonsdk-jsharp-sample.vjsproj")))
+            using (new TestResource("nonsdk-vb-sample.vbproj", NormalizePath(@"vb\nonsdk-vb-sample.vbproj")))
+            using (new TestResource("legacy-cpp-sample.vcproj", NormalizePath(@"cpp-sample\legacy-cpp-sample.vcproj")))
+            using (TestResource file = new TestResource("solution-vs2005-samples.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
 
@@ -108,8 +108,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void SolutionWithDisabledProject()
         {
-            using (new TestResource("csharp-sample.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
-            using (new TestResource("csharp-debug-only.csproj", NormalizePath(@"csharp-debug-only\csharp-debug-only.csproj")))
+            using (new TestResource("nonsdk-csharp-sample.csproj", NormalizePath(@"csharp-sample\nonsdk-csharp-sample.csproj")))
+            using (new TestResource("nonsdk-csharp-debug-only.csproj", NormalizePath(@"csharp-debug-only\nonsdk-csharp-debug-only.csproj")))
             using (TestResource file = new TestResource("solution-with-disabled-project.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
@@ -122,8 +122,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void SolutionWithNonNunitTestProject()
         {
-            using (new TestResource("csharp-sample.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
-            using (new TestResource("csharp-debug-only-no-nunit.csproj", NormalizePath(@"csharp-debug-only-no-nunit\csharp-debug-only-no-nunit.csproj")))
+            using (new TestResource("nonsdk-csharp-sample.csproj", NormalizePath(@"csharp-sample\nonsdk-csharp-sample.csproj")))
+            using (new TestResource("nonsdk-csharp-debug-only-no-nunit.csproj", NormalizePath(@"nonsdk-csharp-debug-only-no-nunit\csharp-debug-only-no-nunit.csproj")))
             using (TestResource file = new TestResource("solution-with-non-nunit-project.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);

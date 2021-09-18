@@ -30,11 +30,13 @@ namespace NUnit.Engine.Tests.resources
         public TestResource(string name)
             : base(typeof(TestResource), name)
         {
+            Console.WriteLine("Created " + name);
         }
 
         public TestResource(string name, string filePath)
             : base(typeof(TestResource), name, filePath)
         {
+            Console.WriteLine("Created " + name);
         }
     }
 }
