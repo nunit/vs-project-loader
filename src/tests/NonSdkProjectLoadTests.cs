@@ -84,7 +84,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void FromProjectWithTemplatedPaths()
         {
-            using (var file = new TestResource("TestTemplatedPaths.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            using (var file = new TestResource("nonsdk-csharp-with-templated-paths.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(3, project.ConfigNames.Count);
@@ -113,7 +113,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void ProjectWithDuplicatedSections()
         {
-            using (var file = new TestResource("test-duplicated-key-project.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            using (var file = new TestResource("nonsdk-with-duplicated-key.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(3, project.ConfigNames.Count);

@@ -43,7 +43,7 @@
     <EmbeddedResource Include="resources\legacy-csharp-sample.csproj" />
     <EmbeddedResource Include="resources\legacy-samples.sln" />
     <EmbeddedResource Include="resources\legacy-vb-sample.vbproj" />
-    <EmbeddedResource Include="resources\MultiplePlatformProject.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-with-multiple-platforms.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\solution-vs2005-samples.sln" />
@@ -63,11 +63,11 @@
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-assembly-name.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\project-with-package-reference.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-with-package-reference.csproj" />
     <EmbeddedResource Include="resources\solution-with-package-reference.sln" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\TestTemplatedPaths.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-csharp-with-templated-paths.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-dll.csproj" />
@@ -88,6 +88,6 @@
     <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-exe.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\test-duplicated-key-project.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-with-duplicated-key.csproj" />
   </ItemGroup>
 </Project>

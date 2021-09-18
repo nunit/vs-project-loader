@@ -127,7 +127,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void SolutionWithProjectUsingPackageReference()
         {
-            using (new TestResource("project-with-package-reference.csproj", NormalizePath(@"project-with-package-reference\project-with-package-reference.csproj")))
+            using (new TestResource("nonsdk-csharp-with-package-reference.csproj", NormalizePath(@"project-with-package-reference\nonsdk-csharp-with-package-reference.csproj")))
             using (TestResource file = new TestResource("solution-with-package-reference.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
