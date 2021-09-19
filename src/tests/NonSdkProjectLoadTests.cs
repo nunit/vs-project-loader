@@ -35,6 +35,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
         [TestCase("nonsdk-csharp-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
         [TestCase("nonsdk-csharp-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
+        [TestCase("nonsdk-multiple-platforms.csproj", new string[] { "Debug", "Release", "Debug|x64", "Release|x64", "Debug|x86", "Release|x86" }, "MultiplePlatformProject")]
         [TestCase("nonsdk-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
         [TestCase("nonsdk-jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
         [TestCase("nonsdk-fsharp-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]

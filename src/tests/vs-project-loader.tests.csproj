@@ -27,6 +27,7 @@
     <EmbeddedResource Include="resources\legacy-cpp-unmanaged.vcproj" />
     <EmbeddedResource Include="resources\legacy-jsharp-sample.vjsproj" />
     <EmbeddedResource Include="resources\sdk-net20-minimal.csproj" />
+    <EmbeddedResource Include="resources\solution-with-multiple-platforms.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\extension\vs-project-loader.csproj" />
@@ -44,7 +45,7 @@
     <EmbeddedResource Include="resources\legacy-csharp-sample.csproj" />
     <EmbeddedResource Include="resources\legacy-samples.sln" />
     <EmbeddedResource Include="resources\legacy-vb-sample.vbproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-with-multiple-platforms.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-multiple-platforms.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\solution-vs2005-samples.sln" />

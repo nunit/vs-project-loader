@@ -21,6 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System.IO;
 using NUnit.Engine.Extensibility;
 using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
@@ -61,6 +62,30 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 Assert.AreEqual(2, project.ConfigNames.Count);
                 Assert.AreEqual(4, project.GetTestPackage("Debug").SubPackages.Count);
                 Assert.AreEqual(4, project.GetTestPackage("Release").SubPackages.Count);
+            }
+        }
+
+        [Test]
+        public void SolutionWithMultiplePlatforms()
+        {
+            using (new TestResource("nonsdk-multiple-platforms.csproj"))
+            using (TestResource file = new TestResource("solution-with-multiple-platforms.sln"))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+                Assert.That(project.ConfigNames, Is.EqualTo(new[] { "Debug", "Release" }));
+
+                string tempDir = Path.GetDirectoryName(file.Path);
+                foreach (string config in project.ConfigNames)
+                {
+                    var subPackages = project.GetTestPackage(config).SubPackages;
+                    Assert.That(subPackages.Count, Is.EqualTo(3));
+                    Assert.That(subPackages[0].FullName, Is.EqualTo(
+                        $"{tempDir}\\bin\\{config}\\MultiplePlatformProject.dll"));
+                    Assert.That(subPackages[1].FullName, Is.EqualTo(
+                        $"{tempDir}\\bin\\x64\\{config}\\MultiplePlatformProject.dll"));
+                    Assert.That(subPackages[2].FullName, Is.EqualTo(
+                        $"{tempDir}\\bin\\x86\\{config}\\MultiplePlatformProject.dll"));
+                }
             }
         }
 
