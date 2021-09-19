@@ -31,13 +31,14 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class NonSdkProjectLoadTests : ProjectLoaderTests
     {
-        [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("nonsdk-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("nonsdk-csharp-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
-        [TestCase("nonsdk-csharp-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
-        [TestCase("nonsdk-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("nonsdk-jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("nonsdk-fsharp-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]
+        [TestCase("nonsdk-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
+        [TestCase("nonsdk-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
+        [TestCase("nonsdk-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
+        [TestCase("nonsdk-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
+        [TestCase("nonsdk-multiple-platforms.csproj", new string[] { "Debug", "Release", "Debug|x64", "Release|x64", "Debug|x86", "Release|x86" }, "MultiplePlatformProject")]
+        [TestCase("nonsdk-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
+        [TestCase("nonsdk-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
+        [TestCase("nonsdk-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
             Assert.That(_loader.CanLoadFrom(resourceName));
@@ -61,8 +62,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
-        [TestCase("nonsdk-csharp-missing-assembly-name.csproj", "nonsdk-csharp-missing-assembly-name.exe")]
-        [TestCase("nonsdk-csharp-missing-output-type.csproj", "MissingOutputType.dll")]
+        [TestCase("nonsdk-missing-assembly-name.csproj", "nonsdk-missing-assembly-name.exe")]
+        [TestCase("nonsdk-missing-output-type.csproj", "MissingOutputType.dll")]
         public void PicksUpCorrectMsBuildProperty(string resourceName, string expectedOutputFilename)
         {
             using (TestResource file = new TestResource(resourceName))
@@ -81,7 +82,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void FromProjectWithTemplatedPaths()
         {
-            using (var file = new TestResource("nonsdk-csharp-with-templated-paths.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            using (var file = new TestResource("nonsdk-templated-paths.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(3, project.ConfigNames.Count);
@@ -110,7 +111,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         [Test]
         public void ProjectWithDuplicatedSections()
         {
-            using (var file = new TestResource("nonsdk-with-duplicated-key.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
+            using (var file = new TestResource("nonsdk-duplicated-key.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(3, project.ConfigNames.Count);

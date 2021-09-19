@@ -219,8 +219,8 @@ PackageTest[] GetPackageTests(BuildParameters parameters)
             TestConsoleVersions = new string[] { "3.7.0", "3.12.0" },
             ExpectedResult = new ExpectedResult("Passed")
             {
-                Total = 68,
-                Passed = 68,
+                Total = 70,
+                Passed = 70,
                 Failed = 0,
                 Warnings = 0,
                 Inconclusive = 0,

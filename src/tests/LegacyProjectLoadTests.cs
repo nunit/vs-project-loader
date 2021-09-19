@@ -31,13 +31,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class LegacyProjectLoadTests : ProjectLoaderTests
     {
-        [TestCase("legacy-csharp-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("legacy-csharp-hebrew-file-problem.csproj", new string[] { "Debug", "Release" }, "HebrewFileProblem")]
-        [TestCase("legacy-vb-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("legacy-jsharp-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("legacy-cpp-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
-        [TestCase("legacy-cpp-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-cpp-library-with-macros")]
-        [TestCase("legacy-cpp-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
+        [TestCase("legacy-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
+        [TestCase("legacy-hebrew-file-problem.csproj", new string[] { "Debug", "Release" }, "HebrewFileProblem")]
+        [TestCase("legacy-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
+        [TestCase("legacy-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
+        [TestCase("legacy-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
+        [TestCase("legacy-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-library-with-macros")]
+        [TestCase("legacy-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
         public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
         {
             Assert.That(_loader.CanLoadFrom(resourceName));
