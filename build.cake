@@ -118,7 +118,7 @@ Task("Test")
 	.IsDependentOn("Build")
 	.Does<BuildParameters>((parameters) =>
 	{
-		NUnit3(parameters.OutputDirectory + "vs-project-loader.tests.dll");
+		StartProcess(parameters.OutputDirectory + "vs-project-loader.tests.exe");
 	});
 
 //////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ PackageTest[] GetPackageTests(BuildParameters parameters)
                 Warnings = 0,
                 Inconclusive = 0,
                 Skipped = 0,
-                Assemblies = new[] { new ExpectedAssemblyResult("vs-project-loader.tests.dll", "net-2.0") }
+                Assemblies = new[] { new ExpectedAssemblyResult("vs-project-loader.tests.exe", "net-2.0") }
             }
         }
     };
