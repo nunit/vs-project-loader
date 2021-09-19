@@ -9,10 +9,12 @@
     <AssemblyName>vs-project-loader.tests</AssemblyName>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="nunit.engine.api" Version="3.11.1" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnitLite" Version="3.11.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-net20-minimal-with-target-frameworks.csproj" />
@@ -54,42 +56,22 @@
     <EmbeddedResource Include="resources\solution-with-unmanaged-cpp.sln" />
     <EmbeddedResource Include="resources\solution-with-web-application.sln" />
     <EmbeddedResource Include="resources\nonsdk-sample.vbproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-minimal.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-output-path.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-assembly-name.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\nonsdk-package-reference.csproj" />
     <EmbeddedResource Include="resources\solution-with-package-reference.sln" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\nonsdk-templated-paths.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-dll.csproj" />
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-exe.csproj" />
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-with-assembly-name-exe.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-minimal-exe.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-dll.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-exe.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-web.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-minimal-web.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-dll.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-exe.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\nonsdk-duplicated-key.csproj" />
   </ItemGroup>
 </Project>
