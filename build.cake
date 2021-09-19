@@ -1,6 +1,10 @@
 #tool nuget:?package=GitVersion.CommandLine&version=5.0.0
 #tool nuget:?package=GitReleaseManager&version=0.11.0
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.7.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.8.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.9.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.10.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.11.1
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.12.0
 
 //////////////////////////////////////////////////////////////////////
@@ -14,6 +18,8 @@ const string GITHUB_OWNER = "nunit";
 const string GITHUB_REPO = "vs-project-loader";
 const string DEFAULT_VERSION = "3.9.0";
 const string DEFAULT_CONFIGURATION = "Release";
+static readonly string[] DEFAULT_CONSOLE_VERSIONS = new[] {
+    "3.7.0", "3.8.0", "3.9.0", "3.10.0", "3.11.1", "3.12.0" };
 
 // Load scripts after defining constants
 #load "cake/parameters.cake"
@@ -216,7 +222,7 @@ PackageTest[] GetPackageTests(BuildParameters parameters)
         {
             Description = "Re-run unit tests using csproj file",
             Arguments = $"src/tests/vs-project-loader.tests.csproj --config={parameters.Configuration}",
-            TestConsoleVersions = new string[] { "3.7.0", "3.12.0" },
+            TestConsoleVersions = DEFAULT_CONSOLE_VERSIONS,
             ExpectedResult = new ExpectedResult("Passed")
             {
                 Total = 70,
