@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="nunit.engine.api" Version="3.11.1" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-net20-minimal-with-target-frameworks.csproj" />
