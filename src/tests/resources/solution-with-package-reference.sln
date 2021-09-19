@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nonsdk-csharp-with-package-reference", "project-with-package-reference\nonsdk-csharp-with-package-reference.csproj", "{B2D919F2-171A-4D4A-9190-21ADC79BADA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nonsdk-package-reference", "project-with-package-reference\nonsdk-package-reference.csproj", "{B2D919F2-171A-4D4A-9190-21ADC79BADA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

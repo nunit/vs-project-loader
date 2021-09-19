@@ -19,13 +19,13 @@
     <EmbeddedResource Include="resources\sdk-net20-with-output-path-no-target-framework.csproj" />
     <EmbeddedResource Include="resources\sdk-net20-with-output-path.csproj" />
     <EmbeddedResource Include="resources\sdk-net20-with-assembly-name.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-fsharp-sample.fsproj" />
-    <EmbeddedResource Include="resources\nonsdk-jsharp-sample.vjsproj" />
-    <EmbeddedResource Include="resources\legacy-cpp-library-with-macros.vcproj" />
-    <EmbeddedResource Include="resources\legacy-cpp-makefile-project.vcproj" />
-    <EmbeddedResource Include="resources\legacy-cpp-sample.vcproj" />
-    <EmbeddedResource Include="resources\legacy-cpp-unmanaged.vcproj" />
-    <EmbeddedResource Include="resources\legacy-jsharp-sample.vjsproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample.fsproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample.vjsproj" />
+    <EmbeddedResource Include="resources\legacy-library-with-macros.vcproj" />
+    <EmbeddedResource Include="resources\legacy-makefile-project.vcproj" />
+    <EmbeddedResource Include="resources\legacy-sample.vcproj" />
+    <EmbeddedResource Include="resources\legacy-unmanaged.vcproj" />
+    <EmbeddedResource Include="resources\legacy-sample.vjsproj" />
     <EmbeddedResource Include="resources\sdk-net20-minimal.csproj" />
     <EmbeddedResource Include="resources\solution-with-multiple-platforms.sln" />
   </ItemGroup>
@@ -33,18 +33,18 @@
     <ProjectReference Include="..\extension\vs-project-loader.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\nonsdk-csharp-debug-only-no-nunit.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-debug-only.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-missing-assembly-name.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-missing-output-path.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-missing-output-type.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-sample.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-sample_noplatform.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-csharp-xna-project.csproj" />
-    <EmbeddedResource Include="resources\legacy-csharp-hebrew-file-problem.csproj" />
-    <EmbeddedResource Include="resources\legacy-csharp-sample.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-debug-only-no-nunit.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-debug-only.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-missing-assembly-name.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-missing-output-path.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-missing-output-type.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample_noplatform.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-xna-project.csproj" />
+    <EmbeddedResource Include="resources\legacy-hebrew-file-problem.csproj" />
+    <EmbeddedResource Include="resources\legacy-sample.csproj" />
     <EmbeddedResource Include="resources\legacy-samples.sln" />
-    <EmbeddedResource Include="resources\legacy-vb-sample.vbproj" />
+    <EmbeddedResource Include="resources\legacy-sample.vbproj" />
     <EmbeddedResource Include="resources\nonsdk-multiple-platforms.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -53,7 +53,7 @@
     <EmbeddedResource Include="resources\solution-with-non-nunit-project.sln" />
     <EmbeddedResource Include="resources\solution-with-unmanaged-cpp.sln" />
     <EmbeddedResource Include="resources\solution-with-web-application.sln" />
-    <EmbeddedResource Include="resources\nonsdk-vb-sample.vbproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample.vbproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-minimal.csproj" />
@@ -65,11 +65,11 @@
     <EmbeddedResource Include="resources\sdk-netcoreapp1.1-with-assembly-name.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\nonsdk-csharp-with-package-reference.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-package-reference.csproj" />
     <EmbeddedResource Include="resources\solution-with-package-reference.sln" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\nonsdk-csharp-with-templated-paths.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-templated-paths.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-dll.csproj" />
@@ -90,6 +90,6 @@
     <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-exe.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\nonsdk-with-duplicated-key.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-duplicated-key.csproj" />
   </ItemGroup>
 </Project>
