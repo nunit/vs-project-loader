@@ -31,52 +31,65 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class NonSdkProjectLoadTests : ProjectLoaderTests
     {
-        [TestCase("nonsdk-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("nonsdk-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("nonsdk-missing-output-path.csproj", new string[] { "Debug", "Release" }, "MissingOutputPath")]
-        [TestCase("nonsdk-xna-project.csproj", new string[] { "Debug|x86", "Release|x86" }, "XNAWindowsProject")]
-        [TestCase("nonsdk-multiple-platforms.csproj", new string[] { "Debug", "Release", "Debug|x64", "Release|x64", "Debug|x86", "Release|x86" }, "MultiplePlatformProject")]
-        [TestCase("nonsdk-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("nonsdk-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("nonsdk-sample.fsproj", new string[] { "Debug", "Release" }, "fsharp-sample")]
-        public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
+        static ProjectData[] NonSdkProjects = new[]
         {
-            Assert.That(_loader.CanLoadFrom(resourceName));
+            new ProjectData("nonsdk-debug-only.csproj")
+                .Named("DebugOnly"),
+            new ProjectData("nonsdk-debug-only-no-nunit.csproj")
+                .Named("DebugOnly"),
+            new ProjectData("nonsdk-duplicated-key.csproj")
+                .Named("Test")
+                .WithConfig("Debug", ".bin/Debug/Test/")
+                .WithConfig("Release", ".bin/Release/Test/")
+                .WithConfig("Debug2ndTest", "Debug2ndTest/SecondTest/"),
+            new ProjectData("nonsdk-missing-assembly-name.csproj")
+                .WithConfig("Debug", "bin/Common/")
+                .WithConfig("Release", "bin/Common/"),
+            new ProjectData("nonsdk-missing-output-path.csproj")
+                .Named("MissingOutputPath")
+                .WithConfig("Debug", "bin/Common/")
+                .WithConfig("Release", "bin/Common/"),
+            new ProjectData("nonsdk-missing-output-type.csproj")
+                .Named("MissingOutputType")
+                .WithConfig("Debug", "bin/Common/")
+                .WithConfig("Release", "bin/Common/"),
+            new ProjectData("nonsdk-multiple-platforms.csproj")
+                .Named("MultiplePlatformProject")
+                .WithConfig("Debug", "bin/Debug/")
+                .WithConfig("Release", "bin/Release/")
+                .WithConfig("Debug|x64", "bin/x64/Debug/")
+                .WithConfig("Release|x64", "bin/x64/Release/")
+                .WithConfig("Debug|x86", "bin/x86/Debug")
+                .WithConfig("Release|x86", "bin/x86/Release"),
+            new ProjectData("nonsdk-package-reference.csproj")
+                .Named("project-with-package-reference"),
+            new ProjectData("nonsdk-sample.csproj")
+                .Named("csharp-sample"),
+            new ProjectData("nonsdk-sample.fsproj")
+                .Named("fsharp-sample"),
+            new ProjectData("nonsdk-sample.vbproj")
+                .Named("vb-sample")
+                .WithConfig("Debug", "bin/")
+                .WithConfig("Release", "bin/"),
+            new ProjectData("nonsdk-sample.vjsproj")
+                .Named("jsharp-sample"),
+            new ProjectData("nonsdk-sample-noplatform.csproj")
+                .Named("csharp-sample_VS2005_noplatform"),
+            new ProjectData("nonsdk-templated-paths.csproj")
+                .Named("TestTemplatedPathsAssembly")
+                .WithConfig("Debug", ".bin/Debug/TestTemplatedPathsAssembly")
+                .WithConfig("Release", ".bin/Release/TestTemplatedPathsAssembly")
+                .WithConfig("FixedPath", "FixedPath/"),
+            new ProjectData("nonsdk-xna-project.csproj")
+                .Named("XNAWindowsProject")
+                .WithConfig("Debug|x86", "bin/x86/Debug")
+                .WithConfig("Release|x86", "bin/x86/Release")
+        };
 
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                Assert.That(project.ConfigNames, Is.EqualTo(configs));
-
-                foreach (var config in configs)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.AreEqual(resourceName, package.Name);
-                    Assert.AreEqual(1, package.SubPackages.Count);
-                    Assert.AreEqual(assemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName));
-                    Assert.That(package.Settings.ContainsKey("BasePath"));
-                    Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
-                }
-            }
-        }
-
-        [TestCase("nonsdk-missing-assembly-name.csproj", "nonsdk-missing-assembly-name.exe")]
-        [TestCase("nonsdk-missing-output-type.csproj", "MissingOutputType.dll")]
-        public void PicksUpCorrectMsBuildProperty(string resourceName, string expectedOutputFilename)
+        [TestCaseSource(nameof(NonSdkProjects))]
+        public void CanLoadNonSdkProject(ProjectData projectData)
         {
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                foreach (var config in project.ConfigNames)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.AreEqual(Path.GetFileName(package.SubPackages[0].FullName), expectedOutputFilename);
-                }
-            }
+            CanLoadProject(projectData);
         }
 
         [Test]
@@ -105,28 +118,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 Assert.AreEqual(1, fixedPathPackage.SubPackages.Count, "FixedPath should have 1 assemblies");
                 Assert.That(fixedPathPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\FixedPath\TestTemplatedPathsAssembly.dll")),
                     "Invalid FixedPath assembly path");
-            }
-        }
-
-        [Test]
-        public void ProjectWithDuplicatedSections()
-        {
-            using (var file = new TestResource("nonsdk-duplicated-key.csproj", NormalizePath(@"csharp-sample\csharp-sample.csproj")))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(3, project.ConfigNames.Count);
-
-                var debugPackage = project.GetTestPackage("Debug");
-                Assert.AreEqual(1, debugPackage.SubPackages.Count, "Debug should have 1 assembly");
-
-                var releasePackage = project.GetTestPackage("Release");
-                Assert.AreEqual(1, releasePackage.SubPackages.Count, "Release should have 1 assembly");
-
-                var secondDebugPackage = project.GetTestPackage("Debug2ndTest");
-                Assert.AreEqual(1, secondDebugPackage.SubPackages.Count, "Debug2ndTest should have 1 assembly");
-                Assert.AreEqual(1, secondDebugPackage.SubPackages.Count, "Debug2ndTest should have 1 assemblies");
-                Assert.That(secondDebugPackage.SubPackages[0].FullName, Does.EndWith(NormalizePath(@"\csharp-sample\Debug2ndTest\SecondTest\Test.exe")),
-                    "Invalid Debug2ndTest assembly path");
             }
         }
     }

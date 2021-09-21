@@ -298,9 +298,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     string configName = GetConfigNameFromCondition(configNode);
 
                     XmlElement outputPathElement = (XmlElement)configNode.SelectSingleNode("OutputPath");
-                    string outputPath = null;
-                    if (outputPathElement != null)
-                        outputPath = outputPathElement.InnerText;
+                    string outputPath = outputPathElement?.InnerText;
+
+                    if (outputPath == null)
+                        continue;
 
                     if (configName == null)
                     {
@@ -308,8 +309,14 @@ namespace NUnit.Engine.Services.ProjectLoaders
                         continue;
                     }
 
-                    if (outputPath != null)
-                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                    if (appendTargetFramework)
+                    {
+                        var suffix = "/" + targetFramework;
+                        if (!outputPath.EndsWith(suffix))
+                            outputPath += suffix;
+                    }
+
+                    _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
                 }
 
                 // By convention there is a Debug and a Release configuration unless others are explicitly 

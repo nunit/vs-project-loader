@@ -31,34 +31,35 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class LegacyProjectLoadTests : ProjectLoaderTests
     {
-        [TestCase("legacy-sample.csproj", new string[] { "Debug", "Release" }, "csharp-sample")]
-        [TestCase("legacy-hebrew-file-problem.csproj", new string[] { "Debug", "Release" }, "HebrewFileProblem")]
-        [TestCase("legacy-sample.vbproj", new string[] { "Debug", "Release" }, "vb-sample")]
-        [TestCase("legacy-sample.vjsproj", new string[] { "Debug", "Release" }, "jsharp-sample")]
-        [TestCase("legacy-sample.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "cpp-sample")]
-        [TestCase("legacy-library-with-macros.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "legacy-library-with-macros")]
-        [TestCase("legacy-makefile-project.vcproj", new string[] { "Debug|Win32", "Release|Win32" }, "MakeFileProject")]
-        public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
+        static ProjectData[] LegacyProjects = new[]
         {
-            Assert.That(_loader.CanLoadFrom(resourceName));
+            new ProjectData("legacy-hebrew-file-problem.csproj")
+                .Named("HebrewFileProblem"),
+            new ProjectData("legacy-library-with-macros.vcproj")
+                .WithConfig("Debug|Win32", "Debug/")
+                .WithConfig("Release|Win32", "Release/"),
+            new ProjectData("legacy-makefile-project.vcproj")
+                .Named("MakeFileProject")
+                .WithConfig("Debug|Win32", "Debug/")
+                .WithConfig("Release|Win32", "Release/"),
+            new ProjectData("legacy-sample.csproj")
+                .Named("csharp-sample"),
+            new ProjectData("legacy-sample.vbproj")
+                .Named("vb-sample")
+                .WithConfig("Debug", "bin/")
+                .WithConfig("Release", "bin/"),
+            new ProjectData("legacy-sample.vcproj")
+                .Named("cpp-sample")
+                .WithConfig("Debug|Win32", "Debug/")
+                .WithConfig("Release|Win32", "Release/"),
+            new ProjectData("legacy-sample.vjsproj")
+                .Named("jsharp-sample")
+        };
 
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                Assert.That(project.ConfigNames, Is.EqualTo(configs));
-
-                foreach (var config in configs)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.AreEqual(resourceName, package.Name);
-                    Assert.AreEqual(1, package.SubPackages.Count);
-                    Assert.AreEqual(assemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName));
-                    Assert.That(package.Settings.ContainsKey("BasePath"));
-                    Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
-                }
-            }
+        [TestCaseSource(nameof(LegacyProjects))]
+        public void CanLoadLegacyProject(ProjectData projectData)
+        {
+            CanLoadProject(projectData);
         }
     }
 }

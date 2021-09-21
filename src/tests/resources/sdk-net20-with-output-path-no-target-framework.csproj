@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net20</TargetFramework>
-    <OutputPath>bin/Release</OutputPath>
+    <OutputPath>bin/output/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
