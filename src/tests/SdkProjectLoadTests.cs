@@ -32,78 +32,57 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public class SdkProjectLoadTests : ProjectLoaderTests
     {
-        [TestCase("sdk-netcoreapp1.1-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-netcoreapp1.1-minimal")]
-        [TestCase("sdk-net20-minimal.csproj", new string[] { "Debug", "Release" }, "sdk-net20-minimal")]
-        [TestCase("sdk-net20-minimal-with-target-frameworks.csproj", new string[] { "Debug", "Release" }, "sdk-net20-minimal-with-target-frameworks")]
-        [TestCase("sdk-net20-with-assembly-name.csproj", new string[] { "Debug", "Release" }, "the-assembly-name")]
-        public void CanLoadVsProject(string resourceName, string[] configs, string assemblyName)
+        static ProjectData[] SdkProjects = new ProjectData[]
         {
-            Assert.That(_loader.CanLoadFrom(resourceName));
+            new ProjectData("sdk-net20-minimal.csproj")
+                .RuntimeDirectory("net20"),
+            new ProjectData("sdk-net20-minimal-with-target-frameworks.csproj")
+                .RuntimeDirectory("net20"),
+            new ProjectData("sdk-net20-with-assembly-name.csproj")
+                .Named("the-assembly-name")
+                .RuntimeDirectory("net20"),
+            new ProjectData("sdk-net20-with-output-path.csproj")
+                .RuntimeDirectory("net20"),
+            new ProjectData("sdk-net20-with-output-path-no-target-framework.csproj")
+                .WithConfig("Debug", "bin/output")
+                .WithConfig("Release", "bin/output"),
+            new ProjectData("sdk-net461-minimal-exe.csproj")
+                .RuntimeDirectory("net461"),
+            new ProjectData("sdk-net461-minimal-web.csproj")
+                .RuntimeDirectory("net461"),
+            new ProjectData("sdk-net461-with-assembly-name-dll.csproj")
+                .Named("the-assembly-name")
+                .RuntimeDirectory("net461"),
+            new ProjectData("sdk-net461-with-assembly-name-exe.csproj")
+                .Named("the-assembly-name")
+                .RuntimeDirectory("net461"),
+            new ProjectData("sdk-netcoreapp1.1-minimal.csproj")
+                .RuntimeDirectory("netcoreapp1.1"),
+            new ProjectData("sdk-netcoreapp1.1-with-assembly-name.csproj")
+                .Named("the-assembly-name")
+                .RuntimeDirectory("netcoreapp1.1"),
+            new ProjectData("sdk-netcoreapp1.1-with-output-path.csproj")
+                .WithConfig("Debug", "bin/Debug/netcoreapp1.1")
+                .WithConfig("Release", "bin/Release/special/netcoreapp1.1"),
+            new ProjectData("sdk-netcoreapp2.0-minimal-dll.csproj")
+                .RuntimeDirectory("netcoreapp2.0"),
+            new ProjectData("sdk-netcoreapp2.0-minimal-exe.csproj")
+                .RuntimeDirectory("netcoreapp2.0"),
+            new ProjectData("sdk-netcoreapp2.0-minimal-web.csproj")
+                .RuntimeDirectory("netcoreapp2.0"),
+            new ProjectData("sdk-netcoreapp2.1-with-assembly-name-exe.csproj")
+                .Named("the-assembly-name")
+                .RuntimeDirectory("netcoreapp2.1"),
+            new ProjectData("sdk-netstandard2.0-minimal-dll.csproj")
+                .RuntimeDirectory("netstandard2.0"),
+            new ProjectData("sdk-netstandard2.0-minimal-exe.csproj")
+                .RuntimeDirectory("netstandard2.0")
+        };
 
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                Assert.That(project.ConfigNames, Is.EqualTo(configs));
-
-                foreach (var config in configs)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.AreEqual(resourceName, package.Name);
-                    Assert.AreEqual(1, package.SubPackages.Count);
-                    Assert.AreEqual(assemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName));
-                    Assert.That(package.Settings.ContainsKey("BasePath"));
-                    Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
-                }
-            }
-        }
-
-        [TestCase("sdk-netcoreapp1.1-minimal.csproj", "Debug", @"bin/Debug/netcoreapp1.1")]
-        [TestCase("sdk-netcoreapp1.1-minimal.csproj", "Release", @"bin/Release/netcoreapp1.1")]
-        [TestCase("sdk-netcoreapp1.1-with-output-path.csproj", "Debug", @"bin/Debug/netcoreapp1.1")]
-        [TestCase("sdk-netcoreapp1.1-with-output-path.csproj", "Release", @"bin/Release/special")]
-        [TestCase("sdk-net20-with-output-path.csproj", "Release", @"bin/Release/net20")]
-        [TestCase("sdk-net20-with-output-path-no-target-framework.csproj", "Release", @"bin/Release")]
-        public void PicksUpCorrectOutputPath(string resourceName, string configuration, string expectedOutputPath)
+        [TestCaseSource(nameof(SdkProjects))]
+        public void CanLoadSdkProject(ProjectData projectData)
         {
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                var package = project.GetTestPackage(configuration);
-                // adjust for difference between Linux/Win:
-                var basePath = package.Settings["BasePath"].ToString().Replace('\\', '/');
-                Console.WriteLine("BasePath: " + basePath);
-                Assert.That(basePath.EndsWith(expectedOutputPath));
-            }
-        }
-
-        [TestCase("sdk-netcoreapp1.1-minimal.csproj", "sdk-netcoreapp1.1-minimal.dll")]
-        [TestCase("sdk-netcoreapp1.1-with-assembly-name.csproj", "the-assembly-name.dll")]
-        [TestCase("sdk-netcoreapp2.0-minimal-dll.csproj", "sdk-netcoreapp2.0-minimal-dll.dll")]
-        [TestCase("sdk-netcoreapp2.0-minimal-exe.csproj", "sdk-netcoreapp2.0-minimal-exe.dll")]
-        [TestCase("sdk-netcoreapp2.0-minimal-web.csproj", "sdk-netcoreapp2.0-minimal-web.dll")]
-        [TestCase("sdk-netcoreapp2.0-with-assembly-name-exe.csproj", "the-assembly-name.dll")]
-        [TestCase("sdk-net461-minimal-exe.csproj", "sdk-net461-minimal-exe.exe")]
-        [TestCase("sdk-net461-minimal-web.csproj", "sdk-net461-minimal-web.exe")]
-        [TestCase("sdk-net461-with-assembly-name-dll.csproj", "the-assembly-name.dll")]
-        [TestCase("sdk-net461-with-assembly-name-exe.csproj", "the-assembly-name.exe")]
-        [TestCase("sdk-netstandard2.0-minimal-dll.csproj", "sdk-netstandard2.0-minimal-dll.dll")]
-        [TestCase("sdk-netstandard2.0-minimal-exe.csproj", "sdk-netstandard2.0-minimal-exe.dll")]
-        public void PicksUpCorrectAssemblyName(string resourceName, string expectedAssemblyName)
-        {
-            using (TestResource file = new TestResource(resourceName))
-            {
-                IProject project = _loader.LoadFrom(file.Path);
-
-                foreach(var config in project.ConfigNames)
-                {
-                    TestPackage package = project.GetTestPackage(config);
-
-                    Assert.That(Path.GetFileName(package.SubPackages[0].FullName) == expectedAssemblyName);
-                }
-            }
+            CanLoadProject(projectData);
         }
     }
 }

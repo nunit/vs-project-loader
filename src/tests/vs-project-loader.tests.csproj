@@ -41,7 +41,7 @@
     <EmbeddedResource Include="resources\nonsdk-missing-output-path.csproj" />
     <EmbeddedResource Include="resources\nonsdk-missing-output-type.csproj" />
     <EmbeddedResource Include="resources\nonsdk-sample.csproj" />
-    <EmbeddedResource Include="resources\nonsdk-sample_noplatform.csproj" />
+    <EmbeddedResource Include="resources\nonsdk-sample-noplatform.csproj" />
     <EmbeddedResource Include="resources\nonsdk-xna-project.csproj" />
     <EmbeddedResource Include="resources\legacy-hebrew-file-problem.csproj" />
     <EmbeddedResource Include="resources\legacy-sample.csproj" />
@@ -64,7 +64,7 @@
     <EmbeddedResource Include="resources\nonsdk-templated-paths.csproj" />
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-dll.csproj" />
     <EmbeddedResource Include="resources\sdk-netcoreapp2.0-minimal-exe.csproj" />
-    <EmbeddedResource Include="resources\sdk-netcoreapp2.0-with-assembly-name-exe.csproj" />
+    <EmbeddedResource Include="resources\sdk-netcoreapp2.1-with-assembly-name-exe.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-minimal-exe.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-dll.csproj" />
     <EmbeddedResource Include="resources\sdk-net461-with-assembly-name-exe.csproj" />
