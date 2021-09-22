@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class SdkProjectLoadTests : ProjectLoaderTests
+    public class SdkProjectLoadTests : ProjectLoadTests
     {
         static ProjectData[] SdkProjects = new ProjectData[]
         {

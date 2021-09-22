@@ -29,7 +29,7 @@ using NUnit.Framework;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class LegacyProjectLoadTests : ProjectLoaderTests
+    public class LegacyProjectLoadTests : ProjectLoadTests
     {
         static ProjectData[] LegacyProjects = new[]
         {

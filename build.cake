@@ -225,12 +225,6 @@ PackageTest[] GetPackageTests(BuildParameters parameters)
             TestConsoleVersions = DEFAULT_CONSOLE_VERSIONS,
             ExpectedResult = new ExpectedResult("Passed")
             {
-                Total = 70,
-                Passed = 70,
-                Failed = 0,
-                Warnings = 0,
-                Inconclusive = 0,
-                Skipped = 0,
                 Assemblies = new[] { new ExpectedAssemblyResult("vs-project-loader.tests.exe", "net-2.0") }
             }
         }

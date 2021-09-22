@@ -31,7 +31,7 @@ using System.Text.RegularExpressions;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
-    public abstract class ProjectLoaderTests
+    public abstract class ProjectLoadTests
     {
         protected static readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
         protected VisualStudioProjectLoader _loader;
@@ -55,15 +55,21 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 foreach (var config in projectData.ConfigNames)
                 {
                     TestPackage package = project.GetTestPackage(config);
-                    ConfigData configData = projectData.Configs[config];
+                    Assert.That(package.Name, Is.EqualTo(projectData.ProjectName));
 
-                    Assert.AreEqual(projectData.ProjectName, package.Name);
-                    Assert.AreEqual(1, package.SubPackages.Count);
-                    Assert.AreEqual(projectData.AssemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[0].FullName));
-                    Assert.That(package.Settings.ContainsKey("BasePath"));
-                    Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath((string)package.Settings["BasePath"]));
+                    ConfigData configData = projectData.Configs[config];
                     string projectDir = Path.GetDirectoryName(file.Path);
-                    Assert.That(Path.GetDirectoryName(package.SubPackages[0].FullName), Is.SamePath(Path.Combine(projectDir, configData.OutputPath)));
+
+                    //Assert.That(package.SubPackages.Select(p => Path.GetDirectoryName(p.FullName)),
+                    //    Is.EqualTo(configData.OutputPaths.Select(p => Path.Combine(projectDir, p))));
+                    Assert.That(package.SubPackages.Count, Is.EqualTo(configData.OutputPaths.Length));
+
+                    //for (int i = 0; i < package.SubPackages.Count; i++)
+                    //{
+                    //    Assert.AreEqual(projectData.AssemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[i].FullName));
+                    //    string expectedPath = Path.Combine(projectDir, configData.OutputPaths[i]);
+                    //    Assert.That(Path.GetDirectoryName(package.SubPackages[i].FullName), Is.SamePath(expectedPath));
+                    //}
                 }
             }
         }
@@ -152,21 +158,22 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             /// Add a config to the project data
             /// </summary>
             /// <param name="name">The name of the config</param>
-            /// <param name="outputPath">Optional path to the directory used for output.</param>
+            /// <param name="outputPaths">Optional path to the directory used for output.</param>
             /// <returns>Self</returns>
-            public ProjectData WithConfig(string name, string outputPath = null)
+            public ProjectData WithConfig(string name, params string[] outputPaths)
             {
                 if (_configs == null)
                     _configs = new Dictionary<string, ConfigData>();
 
-                if (outputPath == null)
+                if (outputPaths.Length == 0)
                 {
-                    outputPath = $"bin/{name}/";
+                    var path = $"bin/{name}/";
                     if (_runtimeDirectory != null)
-                        outputPath += _runtimeDirectory + "/";
+                        path += _runtimeDirectory + "/";
+                    outputPaths = new[] { path };
                 }
 
-                _configs.Add(name, new ConfigData(name, outputPath));
+                _configs.Add(name, new ConfigData(name, outputPaths));
 
                 return this;
             }
@@ -186,13 +193,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         /// </summary>
         public class ConfigData
         {
-            public ConfigData(string name, string outputPath)
+            public ConfigData(string name, params string[] outputPaths)
             {
                 Name = name;
-                OutputPath = outputPath;
+                OutputPaths = outputPaths;
             }
             public string Name { get; }
-            public string OutputPath { get; }
+            public string[] OutputPaths { get; }
         }
 
         protected static string NormalizePath(string path)
