@@ -84,7 +84,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// The path to the project
         /// </summary>
         public string ProjectPath { get; private set; }
-        public XmlDocument MsBuildDocument { get; private set; }
 
         /// <summary>
         /// Gets the active configuration, as defined
@@ -123,9 +122,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
             string appbase = null;
             foreach (var name in _configs.Keys)
             {
-                if (configName == null || configName == name)
+                if (configName == name)
                 {
-                    var config = _configs[name];
+                    var config = _configs[configName];
                     package.AddSubPackage(new TestPackage(config.AssemblyPath));
                     appbase = config.OutputDirectory;
 
@@ -146,10 +145,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// <summary>
         /// The name of the project.
         /// </summary>
-        public string Name
-        {
-            get { return Path.GetFileNameWithoutExtension(ProjectPath); }
-        }
+        public string Name => Path.GetFileNameWithoutExtension(ProjectPath);
+
+        public string ProjectDir => Path.GetDirectoryName(ProjectPath);
 
         #endregion
 
@@ -238,8 +236,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
         }
 
         /// <summary>
-        /// Load a project in the SDK project format. Note that this method
-        /// is only called for file extensions .csproj.
+        /// Load a project in the SDK project format.
         /// </summary>
         /// <returns>True if the project was successfully loaded, false otherwise.</returns>
         private bool TryLoadSdkProject()
@@ -316,7 +313,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                             outputPath += suffix;
                     }
 
-                    _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                    _configs.Add(configName, CreateProjectConfig(configName, outputPath, assemblyName));
                 }
 
                 // By convention there is a Debug and a Release configuration unless others are explicitly 
@@ -333,17 +330,17 @@ namespace NUnit.Engine.Services.ProjectLoaders
                             : $@"bin\{configName}";
                         if (appendTargetFramework)
                             outputPath += "/" + targetFramework;
-                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                        _configs.Add(configName, CreateProjectConfig(configName, outputPath, assemblyName));
                     }
                     if (!_configs.ContainsKey("Release"))
                     {
                         string configName = "Release";
                         string outputPath = commonOutputPath != null
                             ? commonOutputPath.Replace("$(Configuration)", configName)
-                            : $@"bin\{configName}";
+                            : Path.Combine("bin", configName);
                         if (appendTargetFramework)
-                            outputPath += "/" + targetFramework;
-                        _configs.Add(configName, new ProjectConfig(this, configName, outputPath, assemblyName));
+                            outputPath = Path.Combine(outputPath, targetFramework);
+                        _configs.Add(configName, CreateProjectConfig(configName, outputPath, assemblyName));
                     }
                 }
 
@@ -379,7 +376,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     string name = RequiredAttributeValue(configNode, "Name");
                     string outputPath = RequiredAttributeValue(configNode, "OutputPath");
 
-                    _configs.Add(name, new ProjectConfig(this, name, outputPath, assemblyName));
+                    _configs.Add(name, CreateProjectConfig(name, outputPath, assemblyName));
                 }
 
             return true;
@@ -395,8 +392,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
             XmlNodeList nodes = _doc.SelectNodes("/msbuild:Project/msbuild:PropertyGroup", namespaceManager);
             if (nodes == null) return;
-
-            MsBuildDocument = _doc;
 
             XmlElement assemblyNameElement = (XmlElement)_doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:AssemblyName", namespaceManager);
             string assemblyName = assemblyNameElement == null ? Name : assemblyNameElement.InnerText;
@@ -435,7 +430,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     outputPath = explicitOutputPaths.ContainsKey(name) ? explicitOutputPaths[name] : commonOutputPath;
 
                 if (outputPath != null)
-                    _configs[name] = new ProjectConfig(this, name, outputPath.Replace("$(Configuration)", name), assemblyName);
+                    _configs[name] = CreateProjectConfig(name, outputPath.Replace("$(Configuration)", name), assemblyName);
             }
         }
 
@@ -480,7 +475,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 assemblyName = assemblyName.Replace("$(OutDir)", outputPath);
                 assemblyName = assemblyName.Replace("$(ProjectName)", Name);
 
-                _configs.Add(name, new ProjectConfig(this, name, outputPath, assemblyName));
+                _configs.Add(name, CreateProjectConfig(name, outputPath, assemblyName));
             }
         }
 
@@ -526,12 +521,19 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     if (start >= 0)
                     {
                         configurationName = condition.Substring(start + 2).Trim(new char[] { ' ', '\'' });
-                        if (configurationName.EndsWith("|AnyCPU"))
-                            configurationName = configurationName.Substring(0, configurationName.Length - 7);
+                        int bar = configurationName.IndexOf('|');
+                        if (bar > 0)
+                            configurationName = configurationName.Substring(0, bar);
                     }
                 }
             }
             return configurationName;
+        }
+
+        private ProjectConfig CreateProjectConfig(string name, string outputPath, string assemblyName)
+        {
+            var assemblyPath = Path.Combine(Path.Combine(ProjectDir, outputPath), assemblyName);
+            return new ProjectConfig(name, assemblyPath);
         }
 
         #endregion
@@ -540,26 +542,25 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         private class ProjectConfig
         {
-            private IProject _project;
-            private string _outputPath;
-            private string _assemblyName;
-
-            public ProjectConfig(IProject project, string name, string outputPath, string assemblyName)
+            public ProjectConfig(IProject project, string name, string outputDirectory, string assemblyName)
             {
-                _project = project;
-                _outputPath = outputPath;
-                _assemblyName = assemblyName;
+                Name = name;
+                OutputDirectory = Normalize(Path.Combine(Path.GetDirectoryName(project.ProjectPath), outputDirectory));
+                AssemblyPath = Normalize(Path.Combine(OutputDirectory, assemblyName));
             }
 
-            public string OutputDirectory
+            public ProjectConfig(string name, string assemblyPath)
             {
-                get { return Normalize(Path.Combine(Path.GetDirectoryName(_project.ProjectPath), _outputPath)); }
+                Name = name;
+                AssemblyPath = Normalize(assemblyPath);
+                OutputDirectory = Path.GetDirectoryName(AssemblyPath);
             }
 
-            public string AssemblyPath
-            {
-                get { return Normalize(Path.Combine(OutputDirectory, _assemblyName)); }
-            }
+            public string Name { get; }
+
+            public string OutputDirectory { get; }
+
+            public string AssemblyPath { get; }
 
             private static string Normalize(string path)
             {

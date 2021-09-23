@@ -60,16 +60,16 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     ConfigData configData = projectData.Configs[config];
                     string projectDir = Path.GetDirectoryName(file.Path);
 
-                    //Assert.That(package.SubPackages.Select(p => Path.GetDirectoryName(p.FullName)),
-                    //    Is.EqualTo(configData.OutputPaths.Select(p => Path.Combine(projectDir, p))));
                     Assert.That(package.SubPackages.Count, Is.EqualTo(configData.OutputPaths.Length));
 
-                    //for (int i = 0; i < package.SubPackages.Count; i++)
-                    //{
-                    //    Assert.AreEqual(projectData.AssemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[i].FullName));
-                    //    string expectedPath = Path.Combine(projectDir, configData.OutputPaths[i]);
-                    //    Assert.That(Path.GetDirectoryName(package.SubPackages[i].FullName), Is.SamePath(expectedPath));
-                    //}
+                    for (int i = 0; i < package.SubPackages.Count; i++)
+                    {
+                        var subPackage = package.SubPackages[i];
+                        Assert.That(Path.IsPathRooted(subPackage.FullName));
+                        Assert.AreEqual(projectData.AssemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[i].FullName));
+                        string expectedPath = Path.Combine(projectDir, configData.OutputPaths[i]);
+                        Assert.That(Path.GetDirectoryName(package.SubPackages[i].FullName), Is.SamePath(expectedPath));
+                    }
                 }
             }
         }

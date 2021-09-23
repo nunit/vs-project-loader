@@ -80,10 +80,10 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 .WithConfig("Debug", ".bin/Debug/TestTemplatedPathsAssembly")
                 .WithConfig("Release", ".bin/Release/TestTemplatedPathsAssembly")
                 .WithConfig("FixedPath", "FixedPath/"),
-            //new ProjectData("nonsdk-xna-project.csproj")
-            //    .Named("XNAWindowsProject")
-            //    .WithConfig("Debug", "bin/x86/Debug")
-            //    .WithConfig("Release", "bin/x86/Release")
+            new ProjectData("nonsdk-xna-project.csproj")
+                .Named("XNAWindowsProject")
+                .WithConfig("Debug", "bin/x86/Debug")
+                .WithConfig("Release", "bin/x86/Release")
         };
 
         [TestCaseSource(nameof(NonSdkProjects))]
