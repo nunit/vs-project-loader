@@ -102,7 +102,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
             {
                 case ".csproj":
                     if (!LegacyProjectHelper.TryLoadProject(project, doc))
-                        if (!project.TryLoadSdkProject(doc))
+                        if (!SdkProjectHelper.TryLoadProject(project, doc))
                             project.LoadMSBuildProject(doc);
                     break;
 
