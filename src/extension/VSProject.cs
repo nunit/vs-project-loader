@@ -134,6 +134,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         #endregion
 
+        public void AddConfig(string name, string assemblyPath)
+        {
+            _configs.Add(name, new ProjectConfig(name, Path.Combine(ProjectDir, assemblyPath)));
+        }
+
         #region Helper Methods
 
         /// <summary>
@@ -332,51 +337,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 if (outputPath != null)
                     _configs[name] = CreateProjectConfig(name, outputPath.Replace("$(Configuration)", name), assemblyName);
-            }
-        }
-
-        /// <summary>
-        /// Load a C++ project in the legacy format, which was used for C++
-        /// much longer than it was used for the other languages supported.
-        /// </summary>
-        public void LoadLegacyCppProject(XmlDocument doc)
-        {
-            string[] extensionsByConfigType = { "", ".exe", ".dll", ".lib", "" };
-
-            // TODO: This is all very hacked up... replace it.
-            foreach (XmlNode configNode in doc.SelectNodes("/VisualStudioProject/Configurations/Configuration"))
-            {
-                string name = RequiredAttributeValue(configNode, "Name");
-                int config_type = System.Convert.ToInt32(RequiredAttributeValue(configNode, "ConfigurationType"));
-                string dirName = name;
-                int bar = dirName.IndexOf('|');
-                if (bar >= 0)
-                    dirName = dirName.Substring(0, bar);
-                string outputPath = RequiredAttributeValue(configNode, "OutputDirectory");
-                outputPath = outputPath.Replace("$(SolutionDir)", Path.GetFullPath(Path.GetDirectoryName(ProjectPath)) + Path.DirectorySeparatorChar);
-                outputPath = outputPath.Replace("$(ConfigurationName)", dirName);
-
-                XmlNode toolNode = configNode.SelectSingleNode("Tool[@Name='VCLinkerTool']");
-                string assemblyName = null;
-                if (toolNode != null)
-                {
-                    assemblyName = SafeAttributeValue(toolNode, "OutputFile");
-                    if (assemblyName != null)
-                        assemblyName = Path.GetFileName(assemblyName);
-                    else
-                        assemblyName = Path.GetFileNameWithoutExtension(ProjectPath) + extensionsByConfigType[config_type];
-                }
-                else
-                {
-                    toolNode = configNode.SelectSingleNode("Tool[@Name='VCNMakeTool']");
-                    if (toolNode != null)
-                        assemblyName = Path.GetFileName(RequiredAttributeValue(toolNode, "Output"));
-                }
-
-                assemblyName = assemblyName.Replace("$(OutDir)", outputPath);
-                assemblyName = assemblyName.Replace("$(ProjectName)", Name);
-
-                _configs.Add(name, CreateProjectConfig(name, outputPath, assemblyName));
             }
         }
 

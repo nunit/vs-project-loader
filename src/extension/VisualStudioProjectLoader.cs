@@ -114,7 +114,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     break;
 
                 case ".vcproj":
-                    project.LoadLegacyCppProject(doc);
+                    LegacyCppHelper.LoadProject(project, doc);
                     break;
 
                 default:
