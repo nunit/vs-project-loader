@@ -101,7 +101,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
             switch (Path.GetExtension(path))
             {
                 case ".csproj":
-                    if (!project.TryLoadLegacyProject(doc))
+                    if (!LegacyProjectHelper.TryLoadProject(project, doc))
                         if (!project.TryLoadSdkProject(doc))
                             project.LoadMSBuildProject(doc);
                     break;
@@ -109,7 +109,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 case ".vbproj":
                 case ".vjsproj":
                 case ".fsproj":
-                    if (!project.TryLoadLegacyProject(doc))
+                    if (!LegacyProjectHelper.TryLoadProject(project, doc))
                         project.LoadMSBuildProject(doc);
                     break;
 

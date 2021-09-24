@@ -4,12 +4,12 @@ using System.Xml;
 
 namespace NUnit.Engine.Services.ProjectLoaders
 {
+    /// <summary>
+    /// Load a C++ project in the legacy format, which was used for C++
+    /// much longer than it was used for the other languages supported.
+    /// </summary>
     public static class LegacyCppHelper
     {
-        /// <summary>
-        /// Load a C++ project in the legacy format, which was used for C++
-        /// much longer than it was used for the other languages supported.
-        /// </summary>
         public static void LoadProject(VSProject project, XmlDocument doc)
         {
             string[] extensionsByConfigType = { "", ".exe", ".dll", ".lib", "" };

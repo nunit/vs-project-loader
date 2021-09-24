@@ -139,7 +139,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
             _configs.Add(name, new ProjectConfig(name, Path.Combine(ProjectDir, assemblyPath)));
         }
 
-        #region Helper Methods
+        #region Load SDK Project
 
         /// <summary>
         /// Load a project in the SDK project format.
@@ -256,37 +256,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
             return false;
         }
 
-        /// <summary>
-        /// Load a project in the legacy VS2003 format. Note that this method is not 
-        /// called for C++ projects using the same format, because the details differ.
-        /// </summary>
-        /// <returns>True if this project is in the VS2003 format, otherwise false.</returns>
-        public bool TryLoadLegacyProject(XmlDocument doc)
-        {
-            XmlNode settingsNode = doc.SelectSingleNode("/VisualStudioProject/*/Build/Settings");
-            if (settingsNode == null)
-                return false;
+        #endregion
 
-            string assemblyName = RequiredAttributeValue(settingsNode, "AssemblyName");
-            string outputType = RequiredAttributeValue(settingsNode, "OutputType");
-
-            if (outputType == "Exe" || outputType == "WinExe")
-                assemblyName = assemblyName + ".exe";
-            else
-                assemblyName = assemblyName + ".dll";
-
-            XmlNodeList nodes = settingsNode.SelectNodes("Config");
-            if (nodes != null)
-                foreach (XmlNode configNode in nodes)
-                {
-                    string name = RequiredAttributeValue(configNode, "Name");
-                    string outputPath = RequiredAttributeValue(configNode, "OutputPath");
-
-                    _configs.Add(name, CreateProjectConfig(name, outputPath, assemblyName));
-                }
-
-            return true;
-        }
+        #region Load MSBuild Project
 
         /// <summary>
         /// Load a non-C++ project in the MsBuild format introduced with VS2005
@@ -340,19 +312,14 @@ namespace NUnit.Engine.Services.ProjectLoaders
             }
         }
 
+        #endregion
+
+        #region Helper Methods
+
         private string SafeAttributeValue(XmlNode node, string attrName)
         {
             XmlNode attrNode = node.Attributes[attrName];
             return attrNode == null ? null : attrNode.Value;
-        }
-
-        private string RequiredAttributeValue(XmlNode node, string name)
-        {
-            string result = SafeAttributeValue(node, name);
-            if (result != null)
-                return result;
-
-            throw new ApplicationException("Missing required attribute " + name);
         }
 
         private static string GetConfigNameFromCondition(XmlElement configNode)
