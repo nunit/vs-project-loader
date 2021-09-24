@@ -22,6 +22,7 @@
 // ***********************************************************************
 
 using System;
+using System.IO;
 using NUnit.Engine.Extensibility;
 using NUnit.Framework;
 
@@ -30,6 +31,22 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
     [TestFixture]
     public static class ProjectLoaderTests
     {
+        private static readonly string INVALID_FILE = Path.Combine(Path.GetTempPath(), "invalid.csproj");
+
+        private static void WriteInvalidFile(string text)
+        {
+            StreamWriter writer = new StreamWriter(INVALID_FILE);
+            writer.WriteLine(text);
+            writer.Close();
+        }
+
+        [TearDown]
+        public static void EraseInvalidFile()
+        {
+            if (File.Exists(INVALID_FILE))
+                File.Delete(INVALID_FILE);
+        }
+
         [Test]
         public static void CheckExtensionAttribute()
         {
@@ -71,6 +88,19 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         public static void LoadInvalidFileType()
         {
             Assert.Throws<ArgumentException>(() => new VisualStudioProjectLoader().LoadFrom(@"/test.junk"));
+        }
+
+        [Test]
+        public static void FileNotFoundError()
+        {
+            Assert.Throws<FileNotFoundException>(() => new VisualStudioProjectLoader().LoadFrom(@"/junk.csproj"));
+        }
+
+        [Test]
+        public static void InvalidXmlFormat()
+        {
+            WriteInvalidFile("<VisualStudioProject><junk></VisualStudioProject>");
+            Assert.Throws<ArgumentException>(() => new VisualStudioProjectLoader().LoadFrom(Path.Combine(Path.GetTempPath(), "invalid.csproj")));
         }
 
     }

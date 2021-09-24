@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml;
 using NUnit.Engine.Extensibility;
 
 namespace NUnit.Engine.Services.ProjectLoaders
@@ -81,10 +82,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
         public IProject LoadFrom(string path)
         {
             if (IsProjectFile(path))
-                return new VSProject(path);
+                return LoadVSProject(path);
 
             if (IsSolutionFile(path))
-                return LoadSolution(path);
+                return LoadVSSolution(path);
 
             throw new ArgumentException(
                 $"Invalid project file type: {Path.GetFileName(path)}");
@@ -92,7 +93,60 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         const string BUILD_MARKER = ".Build.0 =";
 
-        private VSSolution LoadSolution(string path)
+        private VSProject LoadVSProject(string path)
+        {
+            var project = new VSProject(path);
+            var doc = CreateProjectDocument(path);
+
+            switch (Path.GetExtension(path))
+            {
+                case ".csproj":
+                    if (!project.TryLoadLegacyProject(doc))
+                        if (!project.TryLoadSdkProject(doc))
+                            project.LoadMSBuildProject(doc);
+                    break;
+
+                case ".vbproj":
+                case ".vjsproj":
+                case ".fsproj":
+                    if (!project.TryLoadLegacyProject(doc))
+                        project.LoadMSBuildProject(doc);
+                    break;
+
+                case ".vcproj":
+                    project.LoadLegacyCppProject(doc);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return project;
+        }
+
+        private XmlDocument CreateProjectDocument(string projectPath)
+        {
+            try
+            {
+                using (StreamReader rdr = new StreamReader(projectPath, System.Text.Encoding.UTF8))
+                {
+                    var doc = new XmlDocument();
+                    doc.Load(rdr);
+                    return doc;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException(
+                    $"Invalid project file format: {Path.GetFileName(projectPath)}", e);
+            }
+        }
+
+        private VSSolution LoadVSSolution(string path)
         {
             var solution = new VSSolution(path);
 
@@ -113,7 +167,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 solution.AddConfig(configName, assemblies);
             }
 
-            //solution.Load();
             return solution;
         }
 
@@ -127,9 +180,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
             string vsProjectPath = PathSeparatorLookup.Replace(parts[2].Trim(TRIM_CHARS), Path.DirectorySeparatorChar.ToString());
             string vsProjectGuid = parts[3].Trim(TRIM_CHARS);
 
-            if (VisualStudioProjectLoader.IsProjectFile(vsProjectPath))
+            if (IsProjectFile(vsProjectPath))
             {
-                var vsProject = new VSProject(Path.Combine(solutionDirectory, vsProjectPath));
+                var vsProject = LoadVSProject(Path.Combine(solutionDirectory, vsProjectPath));
 
                 _projectLookup[vsProjectGuid] = vsProject;
             }

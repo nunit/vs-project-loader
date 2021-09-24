@@ -46,11 +46,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         private static readonly Regex netFramework = new Regex("^net[1-9]");
 
         /// <summary>
-        /// The XML representation of the project
-        /// </summary>
-        private XmlDocument _doc;
-
-        /// <summary>
         /// The list of all our configs
         /// </summary>
         private IDictionary<string, ProjectConfig> _configs = new Dictionary<string, ProjectConfig>();
@@ -62,7 +57,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         public VSProject(string projectPath)
         {
             ProjectPath = Path.GetFullPath(projectPath);
-            Load();
         }
 
         #endregion
@@ -143,78 +137,25 @@ namespace NUnit.Engine.Services.ProjectLoaders
         #region Helper Methods
 
         /// <summary>
-        /// Load a project in various ways, depending on the extension.
-        /// </summary>
-        public void Load()
-        {
-            StreamReader rdr = new StreamReader(ProjectPath, System.Text.Encoding.UTF8);
-
-            try
-            {
-                _doc = new XmlDocument();
-                _doc.Load(rdr);
-
-                string extension = Path.GetExtension(ProjectPath);
-
-                switch (extension)
-                {
-                    case ".csproj":
-                        // We try legacy project first, then new format for .NET Core projects
-                        if (!TryLoadLegacyProject())
-                            if (!TryLoadSdkProject())
-                                LoadMSBuildProject();
-                        break;
-
-                    case ".vbproj":
-                    case ".vjsproj":
-                    case ".fsproj":
-                        // We try legacy projects first, as the initial check is simplest
-                        if (!TryLoadLegacyProject())
-                            LoadMSBuildProject();
-                        break;
-
-                    case ".vcproj":
-                        LoadLegacyCppProject();
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                ThrowInvalidFormat(ProjectPath, e);
-            }
-            finally
-            {
-                rdr.Close();
-            }
-        }
-
-        /// <summary>
         /// Load a project in the SDK project format.
         /// </summary>
         /// <returns>True if the project was successfully loaded, false otherwise.</returns>
-        private bool TryLoadSdkProject()
+        public bool TryLoadSdkProject(XmlDocument doc)
         {
-            XmlNode root = _doc.SelectSingleNode("Project");
+            XmlNode root = doc.SelectSingleNode("Project");
 
             if (root != null && SafeAttributeValue(root, "Sdk") != null)
             {
                 string[] targetFrameworks =
-                    _doc.SelectSingleNode("Project/PropertyGroup/TargetFrameworks")?.InnerText?.Split(new[] { ';' });
+                    doc.SelectSingleNode("Project/PropertyGroup/TargetFrameworks")?.InnerText?.Split(new[] { ';' });
 
                 // TODO: Not currently handling multiple targets. That's a separate issue.
                 // This code only handles use of TargetFrameworks with a single value.
                 string targetFramework = targetFrameworks != null && targetFrameworks.Length > 0
                     ? targetFrameworks[0]
-                    : _doc.SelectSingleNode("Project/PropertyGroup/TargetFramework")?.InnerText;
+                    : doc.SelectSingleNode("Project/PropertyGroup/TargetFramework")?.InnerText;
 
-                XmlNode assemblyNameNode = _doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
+                XmlNode assemblyNameNode = doc.SelectSingleNode("Project/PropertyGroup/AssemblyName");
 
                 // Even console apps are dll's even if <OutputType> has value 'EXE',
                 // if TargetFramework is netcore
@@ -233,7 +174,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     }
                     else
                     {
-                        XmlNode outputTypeNode = _doc.SelectSingleNode("Project/PropertyGroup/OutputType");
+                        XmlNode outputTypeNode = doc.SelectSingleNode("Project/PropertyGroup/OutputType");
                         if (outputTypeNode != null && outputTypeNode.InnerText != "Library")
                         {
                             outputType = "exe";
@@ -243,10 +184,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 string assemblyName = assemblyNameNode == null ? $"{Name}.{outputType}" : $"{assemblyNameNode.InnerText}.{outputType}";
 
-                var appendTargetFrameworkNode = _doc.SelectSingleNode("Project/PropertyGroup/AppendTargetFrameworkToOutputPath");
+                var appendTargetFrameworkNode = doc.SelectSingleNode("Project/PropertyGroup/AppendTargetFrameworkToOutputPath");
                 bool appendTargetFramework = appendTargetFrameworkNode == null || appendTargetFrameworkNode.InnerText.ToLower() == "true";
 
-                XmlNodeList nodes = _doc.SelectNodes("/Project/PropertyGroup");
+                XmlNodeList nodes = doc.SelectNodes("/Project/PropertyGroup");
 
                 string commonOutputPath = null;
 
@@ -315,9 +256,9 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// called for C++ projects using the same format, because the details differ.
         /// </summary>
         /// <returns>True if this project is in the VS2003 format, otherwise false.</returns>
-        private bool TryLoadLegacyProject()
+        public bool TryLoadLegacyProject(XmlDocument doc)
         {
-            XmlNode settingsNode = _doc.SelectSingleNode("/VisualStudioProject/*/Build/Settings");
+            XmlNode settingsNode = doc.SelectSingleNode("/VisualStudioProject/*/Build/Settings");
             if (settingsNode == null)
                 return false;
 
@@ -345,18 +286,18 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// <summary>
         /// Load a non-C++ project in the MsBuild format introduced with VS2005
         /// </summary>
-        private void LoadMSBuildProject()
+        public void LoadMSBuildProject(XmlDocument doc)
         {
-            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(_doc.NameTable);
+            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
             namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
 
-            XmlNodeList nodes = _doc.SelectNodes("/msbuild:Project/msbuild:PropertyGroup", namespaceManager);
+            XmlNodeList nodes = doc.SelectNodes("/msbuild:Project/msbuild:PropertyGroup", namespaceManager);
             if (nodes == null) return;
 
-            XmlElement assemblyNameElement = (XmlElement)_doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:AssemblyName", namespaceManager);
+            XmlElement assemblyNameElement = (XmlElement)doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:AssemblyName", namespaceManager);
             string assemblyName = assemblyNameElement == null ? Name : assemblyNameElement.InnerText;
 
-            XmlElement outputTypeElement = (XmlElement)_doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:OutputType", namespaceManager);
+            XmlElement outputTypeElement = (XmlElement)doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:OutputType", namespaceManager);
             string outputType = outputTypeElement == null ? "Library" : outputTypeElement.InnerText;
 
             if (outputType == "Exe" || outputType == "WinExe")
@@ -398,12 +339,12 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// Load a C++ project in the legacy format, which was used for C++
         /// much longer than it was used for the other languages supported.
         /// </summary>
-        private void LoadLegacyCppProject()
+        public void LoadLegacyCppProject(XmlDocument doc)
         {
             string[] extensionsByConfigType = { "", ".exe", ".dll", ".lib", "" };
 
             // TODO: This is all very hacked up... replace it.
-            foreach (XmlNode configNode in _doc.SelectNodes("/VisualStudioProject/Configurations/Configuration"))
+            foreach (XmlNode configNode in doc.SelectNodes("/VisualStudioProject/Configurations/Configuration"))
             {
                 string name = RequiredAttributeValue(configNode, "Name");
                 int config_type = System.Convert.ToInt32(RequiredAttributeValue(configNode, "ConfigurationType"));
@@ -437,13 +378,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 _configs.Add(name, CreateProjectConfig(name, outputPath, assemblyName));
             }
-        }
-
-        private void ThrowInvalidFormat(string projectPath, Exception e)
-        {
-            throw new ArgumentException(
-                string.Format("Invalid project file format: {0}",
-                                Path.GetFileName(projectPath)), e);
         }
 
         private string SafeAttributeValue(XmlNode node, string attrName)

@@ -47,19 +47,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         }
 
         [Test]
-        public void FileNotFoundError()
-        {
-            Assert.Throws<FileNotFoundException>(() => new VSProject(@"/junk.csproj"));
-        }
-
-        [Test]
-        public void InvalidXmlFormat()
-        {
-            WriteInvalidFile("<VisualStudioProject><junk></VisualStudioProject>");
-            Assert.Throws<ArgumentException>(() => new VSProject(Path.Combine(Path.GetTempPath(), "invalid.csproj")));
-        }
-
-        [Test]
         public void EmptyProject()
         {
             WriteInvalidFile("<VisualStudioProject><junk></junk></VisualStudioProject>");
