@@ -43,16 +43,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
     {
         #region Static and Instance Variables
 
-        /// <summary>
-        /// VS Project extentions
-        /// </summary>
-        private static readonly string[] PROJECT_EXTENSIONS = { ".csproj", ".vbproj", ".vjsproj", ".vcproj", ".fsproj" };
-
-        /// <summary>
-        /// VS Solution extension
-        /// </summary>
-        private const string SOLUTION_EXTENSION = ".sln";
-
         private static readonly Regex netFramework = new Regex("^net[1-9]");
 
         /// <summary>
@@ -72,7 +62,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         public VSProject(string projectPath)
         {
             ProjectPath = Path.GetFullPath(projectPath);
-
             Load();
         }
 
@@ -151,42 +140,13 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         #endregion
 
-        #region Public Methods
-
-        public static bool IsProjectFile(string path)
-        {
-            if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-                return false;
-
-            if (path.ToLower().IndexOf("http:") >= 0)
-                return false;
-
-            string extension = Path.GetExtension(path);
-
-            foreach (string validExtension in PROJECT_EXTENSIONS)
-                if (extension == validExtension)
-                    return true;
-
-            return false;
-        }
-
-        public static bool IsSolutionFile(string path)
-        {
-            return Path.GetExtension(path) == SOLUTION_EXTENSION;
-        }
-
-        #endregion
-
         #region Helper Methods
 
         /// <summary>
         /// Load a project in various ways, depending on the extension.
         /// </summary>
-        private void Load()
+        public void Load()
         {
-            if (!IsProjectFile(ProjectPath))
-                ThrowInvalidFileType(ProjectPath);
-
             StreamReader rdr = new StreamReader(ProjectPath, System.Text.Encoding.UTF8);
 
             try
@@ -479,13 +439,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
             }
         }
 
-        private void ThrowInvalidFileType(string projectPath)
-        {
-            throw new ArgumentException(
-                string.Format("Invalid project file type: {0}",
-                                Path.GetFileName(projectPath)));
-        }
-
         private void ThrowInvalidFormat(string projectPath, Exception e)
         {
             throw new ArgumentException(
@@ -542,13 +495,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         private class ProjectConfig
         {
-            public ProjectConfig(IProject project, string name, string outputDirectory, string assemblyName)
-            {
-                Name = name;
-                OutputDirectory = Normalize(Path.Combine(Path.GetDirectoryName(project.ProjectPath), outputDirectory));
-                AssemblyPath = Normalize(Path.Combine(OutputDirectory, assemblyName));
-            }
-
             public ProjectConfig(string name, string assemblyPath)
             {
                 Name = name;

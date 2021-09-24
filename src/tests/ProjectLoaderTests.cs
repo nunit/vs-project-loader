@@ -21,13 +21,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
+using System;
 using NUnit.Engine.Extensibility;
 using NUnit.Framework;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public static class ProjectLoaderAttributeTests
+    public static class ProjectLoaderTests
     {
         [Test]
         public static void CheckExtensionAttribute()
@@ -51,5 +52,26 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     .With.Property("Name").EqualTo("FileExtension")
                     .And.Property("Value").EqualTo(ext));
         }
+
+        [TestCase("project.csproj", ExpectedResult = true)]
+        [TestCase("project.vbproj", ExpectedResult = true)]
+        [TestCase("project.vjsproj", ExpectedResult = true)]
+        [TestCase("project.fsproj", ExpectedResult = true)]
+        [TestCase("project.vcproj", ExpectedResult = true)]
+        [TestCase("project.sln", ExpectedResult = true)]
+        [TestCase("project.xyproj", ExpectedResult = false)]
+        [TestCase("http://localhost/web.csproj", ExpectedResult = false)]
+        [TestCase(@"\MyProject\http://localhost/web.csproj", ExpectedResult = false)]
+        public static bool ValidExtensions(string project)
+        {
+            return new VisualStudioProjectLoader().CanLoadFrom(project);
+        }
+
+        [Test]
+        public static void LoadInvalidFileType()
+        {
+            Assert.Throws<ArgumentException>(() => new VisualStudioProjectLoader().LoadFrom(@"/test.junk"));
+        }
+
     }
 }

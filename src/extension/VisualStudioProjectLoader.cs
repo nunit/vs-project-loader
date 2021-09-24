@@ -22,8 +22,9 @@
 // ***********************************************************************
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using NUnit.Engine.Extensibility;
 
 namespace NUnit.Engine.Services.ProjectLoaders
@@ -40,22 +41,136 @@ namespace NUnit.Engine.Services.ProjectLoaders
     [ExtensionProperty("FileExtension", ".fsproj")]
     public class VisualStudioProjectLoader : IProjectLoader
     {
+        private const string SOLUTION_EXTENSION = ".sln";
+        private static readonly string[] PROJECT_EXTENSIONS = { ".csproj", ".vbproj", ".vjsproj", ".vcproj", ".fsproj" };
+
+        IDictionary<string, VSProject> _projectLookup = new Dictionary<string, VSProject>();
+        //IDictionary<string, SolutionConfig> _configs = new Dictionary<string, SolutionConfig>();
+        IDictionary<string, List<string>> _configs = new Dictionary<string, List<string>>();
+
+        #region Properties
+
+        public static bool IsProjectFile(string path)
+        {
+            if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+                return false;
+
+            if (path.ToLower().IndexOf("http:") >= 0)
+                return false;
+
+            string extension = Path.GetExtension(path);
+
+            foreach (string validExtension in PROJECT_EXTENSIONS)
+                if (extension == validExtension)
+                    return true;
+
+            return false;
+        }
+
+        public static bool IsSolutionFile(string path) => Path.GetExtension(path) == SOLUTION_EXTENSION;
+
+        #endregion
+
         #region IProjectLoader Members
 
         public bool CanLoadFrom(string path)
         {
-            return VSProject.IsProjectFile(path)|| VSProject.IsSolutionFile(path);
+            return IsProjectFile(path)|| IsSolutionFile(path);
         }
 
         public IProject LoadFrom(string path)
         {
-            if (VSProject.IsProjectFile(path))
+            if (IsProjectFile(path))
                 return new VSProject(path);
 
-            if (VSProject.IsSolutionFile(path))
-                return new VSSolution(path);
+            if (IsSolutionFile(path))
+                return LoadSolution(path);
 
-            return null;
+            throw new ArgumentException(
+                $"Invalid project file type: {Path.GetFileName(path)}");
+        }
+
+        const string BUILD_MARKER = ".Build.0 =";
+
+        private VSSolution LoadSolution(string path)
+        {
+            var solution = new VSSolution(path);
+
+            string solutionDirectory = Path.GetDirectoryName(path);
+            string[] lines = File.ReadAllLines(path);
+
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("Project("))
+                    ProcessProjectLine(solutionDirectory, line);
+                else if (line.IndexOf(BUILD_MARKER) >= 0)
+                    ProcessBuildLine(line);
+            }
+
+            foreach (string configName in _configs.Keys)
+            {
+                var assemblies = _configs[configName].ToArray();
+                solution.AddConfig(configName, assemblies);
+            }
+
+            //solution.Load();
+            return solution;
+        }
+
+        private void ProcessProjectLine(string solutionDirectory, string line)
+        {
+            char[] DELIMS = { '=', ',' };
+            char[] TRIM_CHARS = { ' ', '"' };
+            Regex PathSeparatorLookup = new Regex(@"[/\\]");
+
+            string[] parts = line.Split(DELIMS);
+            string vsProjectPath = PathSeparatorLookup.Replace(parts[2].Trim(TRIM_CHARS), Path.DirectorySeparatorChar.ToString());
+            string vsProjectGuid = parts[3].Trim(TRIM_CHARS);
+
+            if (VisualStudioProjectLoader.IsProjectFile(vsProjectPath))
+            {
+                var vsProject = new VSProject(Path.Combine(solutionDirectory, vsProjectPath));
+
+                _projectLookup[vsProjectGuid] = vsProject;
+            }
+        }
+
+        private void ProcessBuildLine(string line)
+        {
+            line = line.Trim();
+            int endBrace = line.IndexOf('}');
+
+            string vsProjectGuid = line.Substring(0, endBrace + 1);
+            VSProject vsProject;
+            if (_projectLookup.TryGetValue(vsProjectGuid, out vsProject))
+            {
+                line = line.Substring(endBrace + 2);
+
+                int split = line.IndexOf(BUILD_MARKER) + 1;
+                string solutionConfig = line.Substring(0, split - 1);
+                int bar = solutionConfig.IndexOf('|');
+                if (bar >= 0)
+                    solutionConfig = solutionConfig.Substring(0, bar);
+
+                string projectConfig = line.Substring(split + BUILD_MARKER.Length);
+                if (!vsProject.ConfigNames.Contains(projectConfig))
+                {
+                    bar = projectConfig.IndexOf('|');
+                    if (bar >= 0)
+                        projectConfig = projectConfig.Substring(0, bar);
+                }
+
+                if (!_configs.Keys.Contains(solutionConfig))
+                    _configs[solutionConfig] = new List<string>();
+
+
+                foreach (var subPackage in vsProject.GetTestPackage(projectConfig).SubPackages)
+                    if (!_configs[solutionConfig].Contains(subPackage.FullName))
+                        _configs[solutionConfig].Add(subPackage.FullName);
+
+                //if (VSProject.IsProjectFile(vsProjectPath))
+                //    project.Add(new VSProject(Path.Combine(solutionDirectory, vsProjectPath)));
+            }
         }
 
         #endregion

@@ -30,12 +30,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 {
     public class VSSolution : IProject
     {
-        static readonly char[] DELIMS = { '=', ',' };
-        static readonly char[] TRIM_CHARS = { ' ', '"' };
-        static readonly Regex PathSeparatorLookup = new Regex(@"[/\\]");
-        const string BUILD_MARKER = ".Build.0 =";
-
-        IDictionary<string, VSProject> _projectLookup = new Dictionary<string, VSProject>();
         IDictionary<string, SolutionConfig> _configs = new Dictionary<string, SolutionConfig>();
 
         #region Constructor
@@ -43,8 +37,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         public VSSolution(string projectPath)
         {
             ProjectPath = Path.GetFullPath(projectPath);
-
-            Load();
         }
 
         #endregion
@@ -103,76 +95,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         #endregion
 
-        #region HelperMethods
+        #region Public Methods
 
-        private void Load()
+        public void AddConfig(string name, string[] assemblies)
         {
-            string solutionDirectory = Path.GetDirectoryName(ProjectPath);
-            using (StreamReader reader = new StreamReader(ProjectPath))
-            {
-                string line = reader.ReadLine();
-                while (line != null)
-                {
-                    if (line.StartsWith("Project("))
-                    {
-                        string[] parts = line.Split(DELIMS);
-                        string vsProjectPath = PathSeparatorLookup.Replace(parts[2].Trim(TRIM_CHARS), Path.DirectorySeparatorChar.ToString());
-                        string vsProjectGuid = parts[3].Trim(TRIM_CHARS);
-
-                        if (VSProject.IsProjectFile(vsProjectPath))
-                        {
-                            var vsProject = new VSProject(Path.Combine(solutionDirectory, vsProjectPath));
-
-                            _projectLookup[vsProjectGuid] = vsProject;
-                        }
-                    }
-                    else if (line.IndexOf(BUILD_MARKER) >= 0)
-                    {
-                        line = line.Trim();
-                        int endBrace = line.IndexOf('}');
-
-                        string vsProjectGuid = line.Substring(0, endBrace + 1);
-                        VSProject vsProject;
-                        if (_projectLookup.TryGetValue(vsProjectGuid, out vsProject))
-                        {
-                            line = line.Substring(endBrace + 2);
-
-                            int split = line.IndexOf(BUILD_MARKER) + 1;
-                            string solutionConfig = line.Substring(0, split - 1);
-                            int bar = solutionConfig.IndexOf('|');
-                            if (bar >= 0)
-                                solutionConfig = solutionConfig.Substring(0, bar);
-
-                            string projectConfig = line.Substring(split + BUILD_MARKER.Length);
-                            if (!vsProject.ConfigNames.Contains(projectConfig))
-                            {
-                                bar = projectConfig.IndexOf('|');
-                                if (bar >= 0)
-                                    projectConfig = projectConfig.Substring(0, bar);
-                            }
-
-                            SolutionConfig config = null;
-
-                            if (_configs.ContainsKey(solutionConfig))
-                                config = _configs[solutionConfig];
-                            else
-                            {
-                                config = new SolutionConfig(solutionConfig);
-                                _configs.Add(solutionConfig, config);
-                            }
-
-                            foreach (var subPackage in vsProject.GetTestPackage(projectConfig).SubPackages)
-                                if (!config.Assemblies.Contains(subPackage.FullName))
-                                    config.Assemblies.Add(subPackage.FullName);
-
-                            //if (VSProject.IsProjectFile(vsProjectPath))
-                            //    project.Add(new VSProject(Path.Combine(solutionDirectory, vsProjectPath)));
-                        }
-                    }
-
-                    line = reader.ReadLine();
-                }
-            }
+            _configs.Add(name, new SolutionConfig(name, assemblies));
         }
 
         #endregion
@@ -181,10 +108,10 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         private class SolutionConfig
         {
-            public SolutionConfig(string name)
+            public SolutionConfig(string name, params string[] assemblies)
             {
                 Name = name;
-                Assemblies = new List<string>();
+                Assemblies = new List<string>(assemblies);
             }
 
             public string Name { get; private set; }
