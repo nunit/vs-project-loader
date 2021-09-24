@@ -103,14 +103,14 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 case ".csproj":
                     if (!LegacyProjectHelper.TryLoadProject(project, doc))
                         if (!SdkProjectHelper.TryLoadProject(project, doc))
-                            project.LoadMSBuildProject(doc);
+                            NonSdkProjectHelper.LoadProject(project, doc);
                     break;
 
                 case ".vbproj":
                 case ".vjsproj":
                 case ".fsproj":
                     if (!LegacyProjectHelper.TryLoadProject(project, doc))
-                        project.LoadMSBuildProject(doc);
+                        NonSdkProjectHelper.LoadProject(project, doc);
                     break;
 
                 case ".vcproj":
