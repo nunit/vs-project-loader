@@ -29,7 +29,7 @@ using NUnit.Framework;
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
     [TestFixture]
-    public class SolutionLoadTests : ProjectLoaderTests
+    public class SolutionLoadTests : ProjectLoadTests
     {
         [Test]
         public void VS2003Solution()

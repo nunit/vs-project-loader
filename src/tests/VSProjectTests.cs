@@ -46,44 +46,6 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 File.Delete( INVALID_FILE );
         }
 
-        [TestCase("project.csproj", ExpectedResult = true)]
-        [TestCase("project.vbproj", ExpectedResult = true)]
-        [TestCase("project.vjsproj", ExpectedResult = true)]
-        [TestCase("project.fsproj", ExpectedResult = true)]
-        [TestCase("project.vcproj", ExpectedResult = true)]
-        [TestCase("project.sln", ExpectedResult = true)]
-        [TestCase("project.xyproj", ExpectedResult = false)]
-        [TestCase("http://localhost/web.csproj", ExpectedResult = false)]
-        [TestCase(@"\MyProject\http://localhost/web.csproj", ExpectedResult = false)]
-        public bool ValidExtensions(string project)
-        {
-            return CanLoadFrom(project);
-        }
-
-        private static bool CanLoadFrom(string project)
-        {
-            return VSProject.IsProjectFile(project) || VSProject.IsSolutionFile(project);
-        }
-
-        [Test]
-        public void LoadInvalidFileType()
-        {
-            Assert.Throws<ArgumentException>(() => new VSProject(@"/test.junk"));
-        }
-
-        [Test]
-        public void FileNotFoundError()
-        {
-            Assert.Throws<FileNotFoundException>(() => new VSProject(@"/junk.csproj"));
-        }
-
-        [Test]
-        public void InvalidXmlFormat()
-        {
-            WriteInvalidFile("<VisualStudioProject><junk></VisualStudioProject>");
-            Assert.Throws<ArgumentException>(() => new VSProject(Path.Combine(Path.GetTempPath(), "invalid.csproj")));
-        }
-
         [Test]
         public void EmptyProject()
         {
