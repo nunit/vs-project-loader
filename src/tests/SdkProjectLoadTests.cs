@@ -44,26 +44,28 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             new ProjectData("sdk-net20-with-output-path.csproj")
                 .RuntimeDirectory("net20"),
             new ProjectData("sdk-net20-with-output-path-no-target-framework.csproj")
-                .WithConfig("Debug", "bin/output")
-                .WithConfig("Release", "bin/output"),
+                .WithConfig("Debug", "bin/output/sdk-net20-with-output-path-no-target-framework.dll")
+                .WithConfig("Release", "bin/output/sdk-net20-with-output-path-no-target-framework.dll"),
             new ProjectData("sdk-net461-minimal-exe.csproj")
-                .RuntimeDirectory("net461"),
+                .WithConfig("Debug", "bin/Debug/net461/sdk-net461-minimal-exe.exe")
+                .WithConfig("Release", "bin/Release/net461/sdk-net461-minimal-exe.exe"),
             new ProjectData("sdk-net461-minimal-web.csproj")
-                .RuntimeDirectory("net461"),
+                .WithConfig("Debug", "bin/Debug/net461/sdk-net461-minimal-web.exe")
+                .WithConfig("Release", "bin/Release/net461/sdk-net461-minimal-web.exe"),
             new ProjectData("sdk-net461-with-assembly-name-dll.csproj")
                 .Named("the-assembly-name")
                 .RuntimeDirectory("net461"),
             new ProjectData("sdk-net461-with-assembly-name-exe.csproj")
-                .Named("the-assembly-name")
-                .RuntimeDirectory("net461"),
+                .WithConfig("Debug", "bin/Debug/net461/the-assembly-name.exe")
+                .WithConfig("Release", "bin/Release/net461/the-assembly-name.exe"),
             new ProjectData("sdk-netcoreapp1.1-minimal.csproj")
                 .RuntimeDirectory("netcoreapp1.1"),
             new ProjectData("sdk-netcoreapp1.1-with-assembly-name.csproj")
                 .Named("the-assembly-name")
                 .RuntimeDirectory("netcoreapp1.1"),
             new ProjectData("sdk-netcoreapp1.1-with-output-path.csproj")
-                .WithConfig("Debug", "bin/Debug/netcoreapp1.1")
-                .WithConfig("Release", "bin/Release/special/netcoreapp1.1"),
+                .WithConfig("Debug", "bin/Debug/netcoreapp1.1/sdk-netcoreapp1.1-with-output-path.dll")
+                .WithConfig("Release", "bin/Release/special/netcoreapp1.1/sdk-netcoreapp1.1-with-output-path.dll"),
             new ProjectData("sdk-netcoreapp2.0-minimal-dll.csproj")
                 .RuntimeDirectory("netcoreapp2.0"),
             new ProjectData("sdk-netcoreapp2.0-minimal-exe.csproj")

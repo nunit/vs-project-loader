@@ -21,11 +21,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ***********************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Text.RegularExpressions;
 using NUnit.Engine.Extensibility;
 
 namespace NUnit.Engine.Services.ProjectLoaders
@@ -46,7 +43,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
         /// <summary>
         /// The list of all our configs
         /// </summary>
-        private IDictionary<string, ProjectConfig> _configs = new Dictionary<string, ProjectConfig>();
+        private IDictionary<string, ProjectConfig> ProjectConfigs = new Dictionary<string, ProjectConfig>();
 
         #endregion
 
@@ -85,7 +82,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
             get
             {
                 var names = new List<string>();
-                foreach (var name in _configs.Keys)
+                foreach (var name in ProjectConfigs.Keys)
                     names.Add(name);
                 return names;
             }
@@ -100,21 +97,16 @@ namespace NUnit.Engine.Services.ProjectLoaders
         {
             TestPackage package = new TestPackage(ProjectPath);
 
-            string appbase = null;
-            foreach (var name in _configs.Keys)
+            foreach (var name in ProjectConfigs.Keys)
             {
                 if (configName == name)
                 {
-                    var config = _configs[configName];
-                    package.AddSubPackage(new TestPackage(config.AssemblyPath));
-                    appbase = config.OutputDirectory;
-
+                    var config = ProjectConfigs[configName];
+                    foreach(string assemblyPath in config.AssemblyPaths)
+                        package.AddSubPackage(new TestPackage(assemblyPath));
                     break;
                 }
             }
-
-            if (appbase != null)
-                package.AddSetting("BasePath", appbase);
 
             return package;
         }
@@ -130,9 +122,20 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         public string ProjectDir => Path.GetDirectoryName(ProjectPath);
 
-        public void AddConfig(string name, string assemblyPath)
+        public bool HasConfig(string configName) => ProjectConfigs.ContainsKey(configName);
+
+        public void AddConfig(string configName, string assemblyPath)
         {
-            _configs.Add(name, new ProjectConfig(name, Path.Combine(ProjectDir, assemblyPath)));
+            assemblyPath = Path.Combine(ProjectDir, assemblyPath);
+
+            if (!HasConfig(configName))
+                ProjectConfigs.Add(configName, new ProjectConfig(configName, assemblyPath));
+            else
+            {
+                var config = ProjectConfigs[configName];
+                if (!config.AssemblyPaths.Contains(assemblyPath))
+                    config.AssemblyPaths.Add(assemblyPath);
+            }
         }
 
         #endregion
@@ -141,18 +144,18 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         private class ProjectConfig
         {
-            public ProjectConfig(string name, string assemblyPath)
+            public ProjectConfig(string name, params string[] assemblyPaths)
             {
                 Name = name;
-                AssemblyPath = Normalize(assemblyPath);
-                OutputDirectory = Path.GetDirectoryName(AssemblyPath);
+                foreach (string path in assemblyPaths)
+                    AssemblyPaths.Add(Normalize(path));
             }
 
             public string Name { get; }
 
             public string OutputDirectory { get; }
 
-            public string AssemblyPath { get; }
+            public List<string> AssemblyPaths { get; } = new List<string>();
 
             private static string Normalize(string path)
             {

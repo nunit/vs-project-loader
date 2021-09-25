@@ -34,14 +34,14 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
             foreach (XmlElement propertyGroup in propertyGroups)
             {
-                string name = propertyGroup.GetConfigNameFromCondition();
+                string configName = propertyGroup.GetConfigNameFromCondition();
 
                 XmlElement outputPathElement = (XmlElement)propertyGroup.SelectSingleNode("msbuild:OutputPath", namespaceManager);
                 string outputPath = null;
                 if (outputPathElement != null)
                     outputPath = outputPathElement.InnerText;
 
-                if (name == null)
+                if (configName == null)
                 {
                     if (outputPathElement != null)
                         commonOutputPath = outputPath;
@@ -49,13 +49,13 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 }
 
                 if (outputPathElement != null)
-                    explicitOutputPaths[name] = outputPath;
+                    explicitOutputPaths[configName] = outputPath;
 
                 if (outputPath == null)
-                    outputPath = explicitOutputPaths.ContainsKey(name) ? explicitOutputPaths[name] : commonOutputPath;
+                    outputPath = explicitOutputPaths.ContainsKey(configName) ? explicitOutputPaths[configName] : commonOutputPath;
 
-                if (outputPath != null && !project.ConfigNames.Contains(name))
-                    project.AddConfig(name, Path.Combine(outputPath.Replace("$(Configuration)", name), assemblyName));
+                if (outputPath != null)
+                    project.AddConfig(configName, Path.Combine(outputPath.Replace("$(Configuration)", configName), assemblyName));
             }
         }
     }

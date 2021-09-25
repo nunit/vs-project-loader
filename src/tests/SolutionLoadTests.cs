@@ -65,7 +65,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             }
         }
 
-        //[Test]
+        [Test]
         public void SolutionWithMultiplePlatforms()
         {
             using (new TestResource("nonsdk-multiple-platforms.csproj"))

@@ -28,6 +28,7 @@ using NUnit.Engine.Extensibility;
 using NUnit.Engine.Tests.resources;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
+using System;
 
 namespace NUnit.Engine.Services.ProjectLoaders.Tests
 {
@@ -60,15 +61,23 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     ConfigData configData = projectData.Configs[config];
                     string projectDir = Path.GetDirectoryName(file.Path);
 
-                    Assert.That(package.SubPackages.Count, Is.EqualTo(configData.OutputPaths.Length));
+                    //Assert.That(package.SubPackages.Count, Is.EqualTo(configData.OutputPaths.Length), "Wrong number of subpackages");
+                    if (package.SubPackages.Count != configData.AssemblyPaths.Length)
+                    {
+                        Console.WriteLine("Expected:");
+                        foreach (var path in configData.AssemblyPaths)
+                            Console.WriteLine("  " + path);
+                        Console.WriteLine("Actual:");
+                        foreach (var subPackage in package.SubPackages)
+                            Console.WriteLine("  " + subPackage.FullName);
+                        Assert.Fail("Packages do not match expected paths");
+                    }
 
-                    for (int i = 0; i < package.SubPackages.Count; i++)
+                    for (int i = 0; i < configData.AssemblyPaths.Length; i++)
                     {
                         var subPackage = package.SubPackages[i];
-                        Assert.That(Path.IsPathRooted(subPackage.FullName));
-                        Assert.AreEqual(projectData.AssemblyName, Path.GetFileNameWithoutExtension(package.SubPackages[i].FullName));
-                        string expectedPath = Path.Combine(projectDir, configData.OutputPaths[i]);
-                        Assert.That(Path.GetDirectoryName(package.SubPackages[i].FullName), Is.SamePath(expectedPath));
+                        string expectedPath = Path.Combine(projectDir, configData.AssemblyPaths[i]);
+                        Assert.That(subPackage.FullName, Is.SamePath(expectedPath), $"Bad output path for {configData.Name} config");
                     }
                 }
             }
@@ -106,7 +115,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                             var outputPath = _runtimeDirectory != null
                                 ? $"bin/{config}/{_runtimeDirectory}/"
                                 : $"bin/{config}/";
-                            _configs.Add(config, new ConfigData(config, outputPath));
+                            _configs.Add(config, new ConfigData(config, $"{outputPath}/{AssemblyName}.dll"));
                         }
                     }
 
@@ -158,22 +167,22 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             /// Add a config to the project data
             /// </summary>
             /// <param name="name">The name of the config</param>
-            /// <param name="outputPaths">Optional path to the directory used for output.</param>
+            /// <param name="assemblyPaths">Optional path to the directory used for output.</param>
             /// <returns>Self</returns>
-            public ProjectData WithConfig(string name, params string[] outputPaths)
+            public ProjectData WithConfig(string name, params string[] assemblyPaths)
             {
                 if (_configs == null)
                     _configs = new Dictionary<string, ConfigData>();
 
-                if (outputPaths.Length == 0)
+                if (assemblyPaths.Length == 0)
                 {
-                    var path = $"bin/{name}/";
-                    if (_runtimeDirectory != null)
-                        path += _runtimeDirectory + "/";
-                    outputPaths = new[] { path };
+                    var path = _runtimeDirectory != null
+                        ? $"bin/{name}/{_runtimeDirectory}/{AssemblyName}.dll"
+                        : $"bin/{name}/{AssemblyName}.dll";
+                    assemblyPaths = new[] { path };
                 }
 
-                _configs.Add(name, new ConfigData(name, outputPaths));
+                _configs.Add(name, new ConfigData(name, assemblyPaths));
 
                 return this;
             }
@@ -193,13 +202,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
         /// </summary>
         public class ConfigData
         {
-            public ConfigData(string name, params string[] outputPaths)
+            public ConfigData(string name, params string[] assemblyPaths)
             {
                 Name = name;
-                OutputPaths = outputPaths;
+                AssemblyPaths = assemblyPaths;
             }
             public string Name { get; }
-            public string[] OutputPaths { get; }
+            public string[] AssemblyPaths { get; }
         }
 
         protected static string NormalizePath(string path)
