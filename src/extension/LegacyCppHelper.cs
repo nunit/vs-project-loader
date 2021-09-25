@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml;
 
 namespace NUnit.Engine.Services.ProjectLoaders
@@ -10,20 +9,20 @@ namespace NUnit.Engine.Services.ProjectLoaders
     /// </summary>
     public static class LegacyCppHelper
     {
-        public static void LoadProject(VSProject project, XmlDocument doc)
+        public static void LoadLegacyCppProject(this VSProject project, XmlDocument doc)
         {
             string[] extensionsByConfigType = { "", ".exe", ".dll", ".lib", "" };
 
             // TODO: This is all very hacked up... replace it.
             foreach (XmlNode configNode in doc.SelectNodes("/VisualStudioProject/Configurations/Configuration"))
             {
-                string name = RequiredAttributeValue(configNode, "Name");
-                int config_type = System.Convert.ToInt32(RequiredAttributeValue(configNode, "ConfigurationType"));
+                string name = configNode.RequiredAttributeValue("Name");
+                int config_type = System.Convert.ToInt32(configNode.RequiredAttributeValue("ConfigurationType"));
                 string dirName = name;
                 int bar = dirName.IndexOf('|');
                 if (bar >= 0)
                     dirName = dirName.Substring(0, bar);
-                string outputPath = RequiredAttributeValue(configNode, "OutputDirectory");
+                string outputPath = configNode.RequiredAttributeValue("OutputDirectory");
                 outputPath = outputPath.Replace("$(SolutionDir)", Path.GetFullPath(Path.GetDirectoryName(project.ProjectPath)) + Path.DirectorySeparatorChar);
                 outputPath = outputPath.Replace("$(ConfigurationName)", dirName);
 
@@ -31,7 +30,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 string assemblyName = null;
                 if (toolNode != null)
                 {
-                    assemblyName = SafeAttributeValue(toolNode, "OutputFile");
+                    assemblyName = toolNode.Attributes["OutputFile"]?.Value;
                     if (assemblyName != null)
                         assemblyName = Path.GetFileName(assemblyName);
                     else
@@ -41,7 +40,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 {
                     toolNode = configNode.SelectSingleNode("Tool[@Name='VCNMakeTool']");
                     if (toolNode != null)
-                        assemblyName = Path.GetFileName(RequiredAttributeValue(toolNode, "Output"));
+                        assemblyName = Path.GetFileName(toolNode.RequiredAttributeValue("Output"));
                 }
 
                 assemblyName = assemblyName.Replace("$(OutDir)", outputPath);
@@ -49,21 +48,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
                 project.AddConfig(name, Path.Combine(outputPath, assemblyName));
             }
-        }
-
-        private static string SafeAttributeValue(XmlNode node, string attrName)
-        {
-            XmlNode attrNode = node.Attributes[attrName];
-            return attrNode == null ? null : attrNode.Value;
-        }
-
-        private static string RequiredAttributeValue(XmlNode node, string name)
-        {
-            string result = SafeAttributeValue(node, name);
-            if (result != null)
-                return result;
-
-            throw new ApplicationException("Missing required attribute " + name);
         }
     }
 }

@@ -101,20 +101,20 @@ namespace NUnit.Engine.Services.ProjectLoaders
             switch (Path.GetExtension(path))
             {
                 case ".csproj":
-                    if (!LegacyProjectHelper.TryLoadProject(project, doc))
-                        if (!SdkProjectHelper.TryLoadProject(project, doc))
-                            NonSdkProjectHelper.LoadProject(project, doc);
+                    if (!project.TryLoadLegacyProject(doc))
+                        if (!project.TryLoadSdkProject(doc))
+                            project.LoadNonSdkProject(doc);
                     break;
 
                 case ".vbproj":
                 case ".vjsproj":
                 case ".fsproj":
-                    if (!LegacyProjectHelper.TryLoadProject(project, doc))
-                        NonSdkProjectHelper.LoadProject(project, doc);
+                    if (!project.TryLoadLegacyProject(doc))
+                        project.LoadNonSdkProject(doc);
                     break;
 
                 case ".vcproj":
-                    LegacyCppHelper.LoadProject(project, doc);
+                    project.LoadLegacyCppProject(doc);
                     break;
 
                 default:

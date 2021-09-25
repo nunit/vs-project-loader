@@ -10,13 +10,13 @@ namespace NUnit.Engine.Services.ProjectLoaders
     /// </summary>
     public static class NonSdkProjectHelper
     {
-        public static void LoadProject(VSProject project, XmlDocument doc)
+        public static void LoadNonSdkProject(this VSProject project, XmlDocument doc)
         {
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
             namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
 
-            XmlNodeList nodes = doc.SelectNodes("/msbuild:Project/msbuild:PropertyGroup", namespaceManager);
-            if (nodes == null) return;
+            XmlNodeList propertyGroups = doc.SelectNodes("/msbuild:Project/msbuild:PropertyGroup", namespaceManager);
+            if (propertyGroups == null) return;
 
             XmlElement assemblyNameElement = (XmlElement)doc.SelectSingleNode("/msbuild:Project/msbuild:PropertyGroup/msbuild:AssemblyName", namespaceManager);
             string assemblyName = assemblyNameElement == null ? project.Name : assemblyNameElement.InnerText;
@@ -32,11 +32,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
             string commonOutputPath = null;
             var explicitOutputPaths = new Dictionary<string, string>();
 
-            foreach (XmlElement configNode in nodes)
+            foreach (XmlElement propertyGroup in propertyGroups)
             {
-                string name = GetConfigNameFromCondition(configNode);
+                string name = propertyGroup.GetConfigNameFromCondition();
 
-                XmlElement outputPathElement = (XmlElement)configNode.SelectSingleNode("msbuild:OutputPath", namespaceManager);
+                XmlElement outputPathElement = (XmlElement)propertyGroup.SelectSingleNode("msbuild:OutputPath", namespaceManager);
                 string outputPath = null;
                 if (outputPathElement != null)
                     outputPath = outputPathElement.InnerText;
@@ -57,27 +57,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 if (outputPath != null && !project.ConfigNames.Contains(name))
                     project.AddConfig(name, Path.Combine(outputPath.Replace("$(Configuration)", name), assemblyName));
             }
-        }
-        private static string GetConfigNameFromCondition(XmlElement configNode)
-        {
-            string configurationName = null;
-            XmlAttribute conditionAttribute = configNode.Attributes["Condition"];
-            if (conditionAttribute != null)
-            {
-                string condition = conditionAttribute.Value;
-                if (condition.IndexOf("$(Configuration)") >= 0)
-                {
-                    int start = condition.IndexOf("==");
-                    if (start >= 0)
-                    {
-                        configurationName = condition.Substring(start + 2).Trim(new char[] { ' ', '\'' });
-                        int bar = configurationName.IndexOf('|');
-                        if (bar > 0)
-                            configurationName = configurationName.Substring(0, bar);
-                    }
-                }
-            }
-            return configurationName;
         }
     }
 }

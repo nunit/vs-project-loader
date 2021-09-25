@@ -11,11 +11,11 @@ namespace NUnit.Engine.Services.ProjectLoaders
     {
         private static readonly Regex netFramework = new Regex("^net[1-9]");
 
-        public static bool TryLoadProject(VSProject project, XmlDocument doc)
+        public static bool TryLoadSdkProject(this VSProject project, XmlDocument doc)
         {
             XmlNode root = doc.SelectSingleNode("Project");
 
-            if (root != null && SafeAttributeValue(root, "Sdk") != null)
+            if (root != null && root.Attributes["Sdk"]?.Value != null)
             {
                 string[] targetFrameworks =
                     doc.SelectSingleNode("Project/PropertyGroup/TargetFrameworks")?.InnerText?.Split(new[] { ';' });
@@ -58,15 +58,15 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 var appendTargetFrameworkNode = doc.SelectSingleNode("Project/PropertyGroup/AppendTargetFrameworkToOutputPath");
                 bool appendTargetFramework = appendTargetFrameworkNode == null || appendTargetFrameworkNode.InnerText.ToLower() == "true";
 
-                XmlNodeList nodes = doc.SelectNodes("/Project/PropertyGroup");
+                XmlNodeList propertyGroups = doc.SelectNodes("/Project/PropertyGroup");
 
                 string commonOutputPath = null;
 
-                foreach (XmlElement configNode in nodes)
+                foreach (XmlElement propertyGroup in propertyGroups)
                 {
-                    string configName = GetConfigNameFromCondition(configNode);
+                    string configName = propertyGroup.GetConfigNameFromCondition();
 
-                    XmlElement outputPathElement = (XmlElement)configNode.SelectSingleNode("OutputPath");
+                    XmlElement outputPathElement = (XmlElement)propertyGroup.SelectSingleNode("OutputPath");
                     string outputPath = outputPathElement?.InnerText;
 
                     if (outputPath == null)
@@ -88,31 +88,25 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     project.AddConfig(configName, Path.Combine(outputPath, assemblyName));
                 }
 
+                // TODO: Verify this... What is the expected behavior with and without a Configurtions element?
+
                 // By convention there is a Debug and a Release configuration unless others are explicitly 
                 // mentioned in the project file. If we have less than 2 then at least one of those is missing.
                 // We cannot tell however if the existing configuration is meant to replace Debug or Release.
                 // Therefore we just add what is missing. The one that has been replaced will not be used.
                 if (project.ConfigNames.Count < 2)
                 {
-                    if (!project.ConfigNames.Contains("Debug"))
+                    foreach (string configName in new[] { "Debug", "Release" })
                     {
-                        string configName = "Debug";
-                        string outputPath = commonOutputPath != null
-                            ? commonOutputPath.Replace("$(Configuration)", configName)
-                            : $@"bin\{configName}";
-                        if (appendTargetFramework)
-                            outputPath += "/" + targetFramework;
-                        project.AddConfig(configName, Path.Combine(outputPath, assemblyName));
-                    }
-                    if (!project.ConfigNames.Contains("Release"))
-                    {
-                        string configName = "Release";
-                        string outputPath = commonOutputPath != null
-                            ? commonOutputPath.Replace("$(Configuration)", configName)
-                            : Path.Combine("bin", configName);
-                        if (appendTargetFramework)
-                            outputPath = Path.Combine(outputPath, targetFramework);
-                        project.AddConfig(configName, Path.Combine(outputPath, assemblyName));
+                        if (!project.ConfigNames.Contains(configName))
+                        {
+                            string outputPath = commonOutputPath != null
+                                ? commonOutputPath.Replace("$(Configuration)", configName)
+                                : $@"bin\{configName}";
+                            if (appendTargetFramework)
+                                outputPath += "/" + targetFramework;
+                            project.AddConfig(configName, Path.Combine(outputPath, assemblyName));
+                        }
                     }
                 }
 
@@ -120,33 +114,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
             }
 
             return false;
-        }
-
-        private static string SafeAttributeValue(XmlNode node, string attrName)
-        {
-            return node.Attributes[attrName]?.Value;
-        }
-
-        private static string GetConfigNameFromCondition(XmlElement configNode)
-        {
-            string configurationName = null;
-            XmlAttribute conditionAttribute = configNode.Attributes["Condition"];
-            if (conditionAttribute != null)
-            {
-                string condition = conditionAttribute.Value;
-                if (condition.IndexOf("$(Configuration)") >= 0)
-                {
-                    int start = condition.IndexOf("==");
-                    if (start >= 0)
-                    {
-                        configurationName = condition.Substring(start + 2).Trim(new char[] { ' ', '\'' });
-                        int bar = configurationName.IndexOf('|');
-                        if (bar > 0)
-                            configurationName = configurationName.Substring(0, bar);
-                    }
-                }
-            }
-            return configurationName;
         }
     }
 }
