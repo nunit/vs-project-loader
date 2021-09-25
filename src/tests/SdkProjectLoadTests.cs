@@ -78,7 +78,13 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             new ProjectData("sdk-netstandard2.0-minimal-dll.csproj")
                 .RuntimeDirectory("netstandard2.0"),
             new ProjectData("sdk-netstandard2.0-minimal-exe.csproj")
-                .RuntimeDirectory("netstandard2.0")
+                .RuntimeDirectory("netstandard2.0"),
+            new ProjectData("sdk-net5.0-minimal-exe.fsproj")
+                .WithConfig("Debug", "bin/Debug/net5.0/sdk-net5.0-minimal-exe.exe")
+                .WithConfig("Release", "bin/Release/net5.0/sdk-net5.0-minimal-exe.exe"),
+            new ProjectData("sdk-net5.0-minimal-exe.vbproj")
+                .WithConfig("Debug", "bin/Debug/net5.0/sdk-net5.0-minimal-exe.exe")
+                .WithConfig("Release", "bin/Release/net5.0/sdk-net5.0-minimal-exe.exe")
         };
 
         [TestCaseSource(nameof(SdkProjects))]

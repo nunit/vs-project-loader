@@ -76,7 +76,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
 
         public bool CanLoadFrom(string path)
         {
-            return IsProjectFile(path)|| IsSolutionFile(path);
+            return IsProjectFile(path) || IsSolutionFile(path);
         }
 
         public IProject LoadFrom(string path)
@@ -97,18 +97,19 @@ namespace NUnit.Engine.Services.ProjectLoaders
         {
             var project = new VSProject(path);
             var doc = CreateProjectDocument(path);
-
-            switch (Path.GetExtension(path))
+            var ext = Path.GetExtension(path);
+            
+            switch (ext)
             {
                 case ".csproj":
+                case ".fsproj":
+                case ".vbproj":
                     if (!project.TryLoadLegacyProject(doc))
                         if (!project.TryLoadSdkProject(doc))
                             project.LoadNonSdkProject(doc);
                     break;
 
-                case ".vbproj":
                 case ".vjsproj":
-                case ".fsproj":
                     if (!project.TryLoadLegacyProject(doc))
                         project.LoadNonSdkProject(doc);
                     break;
@@ -118,7 +119,7 @@ namespace NUnit.Engine.Services.ProjectLoaders
                     break;
 
                 default:
-                    break;
+                    throw new Exception($"Unsupported project type: '{ext}'");
             }
 
             return project;
