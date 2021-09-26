@@ -45,7 +45,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
 
         protected void CanLoadProject(ProjectData projectData)
         {
-            Assert.That(_loader.CanLoadFrom(projectData.ProjectName));
+            Assert.That(_loader.CanLoadFrom(projectData.ProjectName), "Failed to load project");
 
             using (TestResource file = new TestResource(projectData.ProjectName))
             {

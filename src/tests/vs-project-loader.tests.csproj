@@ -83,6 +83,7 @@
     <EmbeddedResource Include="resources\sdk-multiple-frameworks.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="resources\nonsdk-x86-only.csproj" />
     <None Include="resources\VBConsoleApp.sln" />
   </ItemGroup>
 </Project>
