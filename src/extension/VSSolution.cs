@@ -90,6 +90,8 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 }
             }
 
+            package.AddSetting("SkipNonTestAssemblies", true);
+
             return package;
         }
 

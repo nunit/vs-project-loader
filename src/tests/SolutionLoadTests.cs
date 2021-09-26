@@ -42,9 +42,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             {
                 IProject project = _loader.LoadFrom(file.Path);
 
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(4, project.GetTestPackage("Debug").SubPackages.Count);
-                Assert.AreEqual(4, project.GetTestPackage("Release").SubPackages.Count);
+                PerformStandardChecks(project, 4, 4);
             }
         }
 
@@ -59,9 +57,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             {
                 IProject project = _loader.LoadFrom(file.Path);
 
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(4, project.GetTestPackage("Debug").SubPackages.Count);
-                Assert.AreEqual(4, project.GetTestPackage("Release").SubPackages.Count);
+                PerformStandardChecks(project, 4, 4);
             }
         }
 
@@ -72,13 +68,12 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-with-multiple-platforms.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.That(project.ConfigNames, Is.EqualTo(new[] { "Debug", "Release" }));
+                PerformStandardChecks(project, 3, 3);
 
                 string tempDir = Path.GetDirectoryName(file.Path);
                 foreach (string config in project.ConfigNames)
                 {
                     var subPackages = project.GetTestPackage(config).SubPackages;
-                    Assert.That(subPackages.Count, Is.EqualTo(3));
                     Assert.That(subPackages[0].FullName, Is.EqualTo(
                         $"{tempDir}\\bin\\{config}\\MultiplePlatformProject.dll"));
                     Assert.That(subPackages[1].FullName, Is.EqualTo(
@@ -96,10 +91,8 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-with-web-application.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
                 // Web project is ignored
-                Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count);
-                Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count);
+                PerformStandardChecks(project, 1, 1);
             }
         }
 
@@ -112,9 +105,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             {
                 IProject project = _loader.LoadFrom(file.Path);
 
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(2, project.GetTestPackage("Debug").SubPackages.Count);
-                Assert.AreEqual(2, project.GetTestPackage("Release").SubPackages.Count);
+                PerformStandardChecks(project, 2, 2);
             }
         }
 
@@ -126,9 +117,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-with-disabled-project.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(2, project.GetTestPackage("Release").SubPackages.Count, "Release should have 2 assemblies");
-                Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 1 assembly");
+                PerformStandardChecks(project, 1, 2);
             }
         }
 
@@ -140,9 +129,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-with-non-nunit-project.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(2, project.GetTestPackage("Release").SubPackages.Count, "Release should have 2 assemblies");
-                Assert.AreEqual(2, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 2 assemblies");
+                PerformStandardChecks(project, 2, 2);
             }
         }
 
@@ -153,9 +140,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-with-package-reference.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count, "Release should have 1 assemblies");
-                Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 1 assembly");
+                PerformStandardChecks(project, 1, 1);
             }
         }
 
@@ -166,10 +151,23 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             using (TestResource file = new TestResource("solution-multiple-frameworks.sln"))
             {
                 IProject project = _loader.LoadFrom(file.Path);
-                Assert.AreEqual(2, project.ConfigNames.Count);
-                Assert.AreEqual(3, project.GetTestPackage("Release").SubPackages.Count, "Release should have 3 assemblies");
-                Assert.AreEqual(3, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 3 assemblies");
+                PerformStandardChecks(project, 3, 3);
             }
+        }
+
+        private void PerformStandardChecks(IProject project, int dbgCount, int relCount)
+        {
+            Assert.That(project.ConfigNames, Is.EqualTo(new object[] { "Debug", "Release" }));
+
+            var package = project.GetTestPackage("Debug");
+            Assert.That(package.SubPackages.Count,
+                Is.EqualTo(dbgCount), $"Debug should have {dbgCount} assemblies");
+            Assert.That(package.Settings.ContainsKey("SkipNonTestAssemblies"));
+
+            package = project.GetTestPackage("Release");
+            Assert.That(package.SubPackages.Count,
+                Is.EqualTo(relCount), $"Release should have {relCount} assemblies");
+            Assert.That(package.Settings.ContainsKey("SkipNonTestAssemblies"));
         }
     }
 }
