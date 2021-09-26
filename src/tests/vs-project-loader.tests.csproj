@@ -74,4 +74,8 @@
     <EmbeddedResource Include="resources\sdk-netstandard2.0-minimal-exe.csproj" />
     <EmbeddedResource Include="resources\nonsdk-duplicated-key.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.fsproj" />
+    <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.vbproj" />
+  </ItemGroup>
 </Project>
