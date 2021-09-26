@@ -84,7 +84,10 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 .WithConfig("Release", "bin/Release/net5.0/sdk-net5.0-minimal-exe.exe"),
             new ProjectData("sdk-net5.0-minimal-exe.vbproj")
                 .WithConfig("Debug", "bin/Debug/net5.0/sdk-net5.0-minimal-exe.exe")
-                .WithConfig("Release", "bin/Release/net5.0/sdk-net5.0-minimal-exe.exe")
+                .WithConfig("Release", "bin/Release/net5.0/sdk-net5.0-minimal-exe.exe"),
+            new ProjectData("sdk-multiple-frameworks.csproj")
+                .WithConfig("Debug", "bin/Debug/net20/sdk-multiple-frameworks.dll", "bin/Debug/net45/sdk-multiple-frameworks.dll", "bin/Debug/net5.0/sdk-multiple-frameworks.dll")
+                .WithConfig("Release", "bin/Release/net20/sdk-multiple-frameworks.dll", "bin/Release/net45/sdk-multiple-frameworks.dll", "bin/Release/net5.0/sdk-multiple-frameworks.dll")
         };
 
         [TestCaseSource(nameof(SdkProjects))]

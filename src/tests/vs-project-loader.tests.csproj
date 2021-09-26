@@ -29,6 +29,7 @@
     <EmbeddedResource Include="resources\legacy-unmanaged.vcproj" />
     <EmbeddedResource Include="resources\legacy-sample.vjsproj" />
     <EmbeddedResource Include="resources\sdk-net20-minimal.csproj" />
+    <EmbeddedResource Include="resources\solution-multiple-frameworks.sln" />
     <EmbeddedResource Include="resources\solution-with-multiple-platforms.sln" />
   </ItemGroup>
   <ItemGroup>
@@ -77,5 +78,11 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.fsproj" />
     <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.vbproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sdk-multiple-frameworks.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\VBConsoleApp.sln" />
   </ItemGroup>
 </Project>
