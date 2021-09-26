@@ -76,6 +76,9 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 .WithConfig("Debug", ".bin/Debug/TestTemplatedPathsAssembly/TestTemplatedPathsAssembly.dll")
                 .WithConfig("Release", ".bin/Release/TestTemplatedPathsAssembly/TestTemplatedPathsAssembly.dll")
                 .WithConfig("FixedPath", "FixedPath//TestTemplatedPathsAssembly.dll"),
+            new ProjectData("nonsdk-x86-only.csproj")
+                .WithConfig("Debug", "bin/x86/Debug/DD.Net_46.Tests.dll")
+                .WithConfig("Release", "bin/x86/Release/DD.Net_46.Tests.dll"),
             new ProjectData("nonsdk-xna-project.csproj")
                 .Named("XNAWindowsProject")
                 .WithConfig("Debug", "bin/x86/Debug/XNAWindowsProject.exe")
