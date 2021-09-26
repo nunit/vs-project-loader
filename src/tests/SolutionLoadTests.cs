@@ -97,6 +97,7 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
             {
                 IProject project = _loader.LoadFrom(file.Path);
                 Assert.AreEqual(2, project.ConfigNames.Count);
+                // Web project is ignored
                 Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count);
                 Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count);
             }
@@ -155,6 +156,19 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                 Assert.AreEqual(2, project.ConfigNames.Count);
                 Assert.AreEqual(1, project.GetTestPackage("Release").SubPackages.Count, "Release should have 1 assemblies");
                 Assert.AreEqual(1, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 1 assembly");
+            }
+        }
+
+        [Test]
+        public void SolutionWithMultipleRuntimes()
+        {
+            using (new TestResource("sdk-multiple-frameworks.csproj", NormalizePath("sdk-multiple-frameworks.csproj")))
+            using (TestResource file = new TestResource("solution-multiple-frameworks.sln"))
+            {
+                IProject project = _loader.LoadFrom(file.Path);
+                Assert.AreEqual(2, project.ConfigNames.Count);
+                Assert.AreEqual(3, project.GetTestPackage("Release").SubPackages.Count, "Release should have 3 assemblies");
+                Assert.AreEqual(3, project.GetTestPackage("Debug").SubPackages.Count, "Debug should have 3 assemblies");
             }
         }
     }
