@@ -10,33 +10,31 @@ namespace NUnit.Engine.Services.ProjectLoaders
     /// </summary>
     public static class LegacyProjectHelper
     {
-        public static bool TryLoadLegacyProject(this VSProject project, XmlDocument doc)
+        public static void LoadLegacyProject(this VSProject project, XmlDocument doc)
         {
             XmlNode settingsNode = doc.SelectSingleNode("/VisualStudioProject/*/Build/Settings");
             if (settingsNode == null)
-                return false;
+                throw new InvalidOperationException("Invalid format for Legacy project");
 
             string assemblyName = settingsNode.RequiredAttributeValue("AssemblyName");
             string outputType = settingsNode.RequiredAttributeValue("OutputType");
-            if (outputType == null)
-                throw new ApplicationException("Missing required attribute 'OutputType'");
 
             if (outputType == "Exe" || outputType == "WinExe")
                 assemblyName = assemblyName + ".exe";
             else
                 assemblyName = assemblyName + ".dll";
 
-            XmlNodeList nodes = settingsNode.SelectNodes("Config");
-            if (nodes != null)
-                foreach (XmlNode configNode in nodes)
-                {
-                    string name = configNode.RequiredAttributeValue("Name");
-                    string outputPath = configNode.RequiredAttributeValue("OutputPath");
+            XmlNodeList configNodes = settingsNode.SelectNodes("Config");
+            if (configNodes == null)
+                throw new InvalidOperationException("No configurations found in project");
 
-                    project.AddConfig(name, Path.Combine(outputPath, assemblyName));
-                }
+            foreach (XmlNode configNode in configNodes)
+            {
+                string name = configNode.RequiredAttributeValue("Name");
+                string outputPath = configNode.RequiredAttributeValue("OutputPath");
 
-            return true;
+                project.AddConfig(name, Path.Combine(outputPath, assemblyName));
+            }
         }
     }
 }

@@ -61,24 +61,34 @@ namespace NUnit.Engine.Services.ProjectLoaders.Tests
                     ConfigData configData = projectData.Configs[config];
                     string projectDir = Path.GetDirectoryName(file.Path);
 
-                    //Assert.That(package.SubPackages.Count, Is.EqualTo(configData.OutputPaths.Length), "Wrong number of subpackages");
-                    if (package.SubPackages.Count != configData.AssemblyPaths.Length)
-                    {
-                        Console.WriteLine("Expected:");
-                        foreach (var path in configData.AssemblyPaths)
-                            Console.WriteLine("  " + path);
-                        Console.WriteLine("Actual:");
-                        foreach (var subPackage in package.SubPackages)
-                            Console.WriteLine("  " + subPackage.FullName);
-                        Assert.Fail("Packages do not match expected paths");
-                    }
+                    int expectedCount = configData.AssemblyPaths.Length;
+                    int actualCount = package.SubPackages.Count;
 
-                    for (int i = 0; i < configData.AssemblyPaths.Length; i++)
+                    // Multiple Assert gives us more info on failures
+                    Assert.Multiple(() =>
                     {
-                        var subPackage = package.SubPackages[i];
-                        string expectedPath = Path.Combine(projectDir, configData.AssemblyPaths[i]);
-                        Assert.That(subPackage.FullName, Is.SamePath(expectedPath), $"Bad output path for {configData.Name} config");
-                    }
+                        Assert.That(actualCount, Is.EqualTo(expectedCount), "Wrong number of subpackages");
+
+                        for (int i = 0; i < expectedCount && i < actualCount; i++)
+                        {
+                            var subPackage = package.SubPackages[i];
+                            string expectedPath = Path.Combine(projectDir, configData.AssemblyPaths[i]);
+                            Assert.That(subPackage.FullName, Is.SamePath(expectedPath), $"Bad output path for {configData.Name} config");
+                        }
+
+                        if (TestContext.CurrentContext.Result.Outcome.Status == Framework.Interfaces.TestStatus.Failed)
+                        {
+                            Console.WriteLine("Expected SubPackages:");
+                            for (int i = 0; i < expectedCount; i++)
+                                Console.WriteLine("  " + configData.AssemblyPaths[i]);
+
+                            Console.WriteLine("Actual SubPackages:");
+                            for (int i = 0; i < actualCount; i++)
+                                Console.WriteLine("  " + package.SubPackages[i].FullName);
+
+                            Assert.Fail("See console output for more info");
+                        }
+                    });
                 }
             }
         }

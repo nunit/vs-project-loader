@@ -78,4 +78,7 @@
     <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.fsproj" />
     <EmbeddedResource Include="resources\sdk-net5.0-minimal-exe.vbproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\sdk-multiple-frameworks.csproj" />
+  </ItemGroup>
 </Project>

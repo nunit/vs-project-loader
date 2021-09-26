@@ -49,29 +49,6 @@ namespace NUnit.Engine.Services.ProjectLoaders
         //IDictionary<string, SolutionConfig> _configs = new Dictionary<string, SolutionConfig>();
         IDictionary<string, List<string>> _configs = new Dictionary<string, List<string>>();
 
-        #region Properties
-
-        public static bool IsProjectFile(string path)
-        {
-            if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-                return false;
-
-            if (path.ToLower().IndexOf("http:") >= 0)
-                return false;
-
-            string extension = Path.GetExtension(path);
-
-            foreach (string validExtension in PROJECT_EXTENSIONS)
-                if (extension == validExtension)
-                    return true;
-
-            return false;
-        }
-
-        public static bool IsSolutionFile(string path) => Path.GetExtension(path) == SOLUTION_EXTENSION;
-
-        #endregion
-
         #region IProjectLoader Members
 
         public bool CanLoadFrom(string path)
@@ -91,6 +68,40 @@ namespace NUnit.Engine.Services.ProjectLoaders
                 $"Invalid project file type: {Path.GetFileName(path)}");
         }
 
+        #endregion
+
+        #region Helper Methods
+
+        private static bool IsProjectFile(string path)
+        {
+            if (!IsValidFilePath(path))
+                return false;
+
+            string extension = Path.GetExtension(path);
+
+            foreach (string validExtension in PROJECT_EXTENSIONS)
+                if (extension == validExtension)
+                    return true;
+
+            return false;
+        }
+
+        private static bool IsSolutionFile(string path)
+        {
+            return IsValidFilePath(path) && Path.GetExtension(path) == SOLUTION_EXTENSION;
+        }
+
+        private static bool IsValidFilePath(string path)
+        {
+            if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+                return false;
+
+            if (path.ToLower().IndexOf("http:") >= 0)
+                return false;
+
+            return true;
+        }
+
         const string BUILD_MARKER = ".Build.0 =";
 
         private VSProject LoadVSProject(string path)
@@ -98,28 +109,27 @@ namespace NUnit.Engine.Services.ProjectLoaders
             var project = new VSProject(path);
             var doc = CreateProjectDocument(path);
             var ext = Path.GetExtension(path);
-            
-            switch (ext)
+            var projFormat = GetProjectFormat(doc);
+
+            if (!FormatIsSupportedForExtension(projFormat, ext))
+                throw new Exception($"The {projFormat} format is not supported for {ext} files!");
+
+            switch(projFormat)
             {
-                case ".csproj":
-                case ".fsproj":
-                case ".vbproj":
-                    if (!project.TryLoadLegacyProject(doc))
-                        if (!project.TryLoadSdkProject(doc))
-                            project.LoadNonSdkProject(doc);
+                case ProjectFormat.Sdk:
+                    project.LoadSdkProject(doc);
                     break;
 
-                case ".vjsproj":
-                    if (!project.TryLoadLegacyProject(doc))
-                        project.LoadNonSdkProject(doc);
+                case ProjectFormat.NonSdk:
+                    project.LoadNonSdkProject(doc);
                     break;
 
-                case ".vcproj":
-                    project.LoadLegacyCppProject(doc);
+                case ProjectFormat.Legacy:
+                    if (ext == ".vcproj")
+                        project.LoadLegacyCppProject(doc);
+                    else
+                        project.LoadLegacyProject(doc);
                     break;
-
-                default:
-                    throw new Exception($"Unsupported project type: '{ext}'");
             }
 
             return project;
@@ -144,6 +154,54 @@ namespace NUnit.Engine.Services.ProjectLoaders
             {
                 throw new ArgumentException(
                     $"Invalid project file format: {Path.GetFileName(projectPath)}", e);
+            }
+        }
+
+        private enum ProjectFormat
+        {
+            Unknown,
+            Sdk,
+            NonSdk,
+            Legacy
+        }
+
+        private ProjectFormat GetProjectFormat(XmlDocument doc)
+        {
+            var docElement = doc.DocumentElement;
+
+            switch (docElement.Name)
+            {
+                case "Project":
+                    return docElement.Attributes["Sdk"]?.Value != null
+                        ? ProjectFormat.Sdk
+                        : ProjectFormat.NonSdk;
+
+                case "VisualStudioProject":
+                    return ProjectFormat.Legacy;
+
+                default:
+                    return ProjectFormat.Unknown;
+            }
+        }
+
+        private bool FormatIsSupportedForExtension(ProjectFormat projFormat, string ext)
+        {
+            // NOTE: We rely on the fact that the extensions and formats have been pre-checked
+            switch (ext)
+            {
+                case ".csproj":
+                case ".fsproj":
+                case ".vbproj":
+                    return true; // All formats are supported
+
+                case ".vjsproj":
+                    return projFormat != ProjectFormat.Sdk;
+
+                case ".vcproj":
+                    return projFormat == ProjectFormat.Legacy;
+
+                default:
+                    return false;
             }
         }
 
