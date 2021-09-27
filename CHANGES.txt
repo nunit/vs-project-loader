@@ -1,4 +1,40 @@
-VS Project Loader Extension 3.8 - August 11, 2018
+VS Project Loader Extension 3.9.0 - September 26, 2021
+
+The major changes in this release are the addition of support for
+SDK-style projects written in VB and F# and automatic use of the
+SkipNonTestAssemblies option when loading a solution. In addition,
+the build and release process has been entirely restructured and a
+number of outstanding bugs have been fixed.
+
+Feature
+
+   * 57 Add support for SDK-style VB and F# projects
+
+Enhancement
+
+   * 62 Automatically skip non-test assemblies when a solution file is loaded
+
+Bugs
+
+   * 23 Error when running with an x86 csproj
+   * 26 Support multi-targeting files
+   * 34 Unable to choose platform when passing solution file
+   * 37 Missing 'TargetFramework' property should not cause an Exception
+   * 38 NUnit3-console.exe unable to find dll when AppendTargetFrameworkToOutputPath is added to project
+   * 56 Project loader should return multiple platforms for each config
+
+Build
+
+   * 35 Add functional tests to build
+   * 36 Automate the GitHub release process
+   * 39 Convert project to SDK format
+   * 40 Upgrade Cake to 1.2.0
+   * 43 Change default branch from master to main
+   * 44 Standardize build scripts for extensions
+   * 48 Reorganize / rename embedded resources for test cases
+   * 53 Run unit tests with NUnitLite
+
+VS Project Loader Extension 3.8.0 - August 11, 2018
 
   Miscellaneous bug fixes.
 
@@ -8,7 +44,7 @@ VS Project Loader Extension 3.8 - August 11, 2018
    * 24 Fixes problem with projects containing duplicated sections 
    * 27 NUnit console run fails on asp.net core project file
 
-VS Project Loader Extension 3.7 - November 18, 2017
+VS Project Loader Extension 3.7.0 - November 18, 2017
 
   Added support for new .csproj file format, and resolved issue with missing
   optional project elements.
@@ -19,7 +55,7 @@ VS Project Loader Extension 3.7 - November 18, 2017
    * 14 NullReferenceException when loading project file with missing AssemblyName/OutputType
    * 16 vs-project-load does not find tests in csproj that use PackageReference instead of package.config
 
-VS Project Loader Extension 3.6 - August 1, 2017
+VS Project Loader Extension 3.6.0 - August 1, 2017
 
   Fixes several packaging errors and adds a new chocolatey package. Runners and engines
   installed under chocolatey will see and make use of this package.
@@ -30,7 +66,7 @@ VS Project Loader Extension 3.6 - August 1, 2017
    * 7 No license file in NuGet package
    * 8 Integrate chocolatey package in build script
 
-VS Project Loader Extension 3.5 - October 6, 2016
+VS Project Loader Extension 3.5.0 - October 6, 2016
 
   The first independent release of the vs-project-loader extension.
 
