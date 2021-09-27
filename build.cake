@@ -321,7 +321,7 @@ Task("CreateDraftRelease")
             // for both the name of the draft release and the milestone,
             // i.e. release-2.0.0, release-2.0.0-beta2, etc.
             string milestone = parameters.BranchName.Substring(8);
-            string releaseName = $"NUnit Project Loader Extension {milestone}";
+            string releaseName = $"Visual Studio Project Loader Extension {milestone}";
 
             Information($"Creating draft release...");
 
